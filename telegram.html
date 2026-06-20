@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Telegram Account</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f2f2f7;          
+            --card: #ffffff;        
+            --border: #e5e5ea;      
+            --text-dark: #1c1c1e;   
+            --text-muted: #8e8e93;  
+            --success: #34c759;     
+            --danger: #ff3b30;
+            --primary: #007aff;     
+            --font: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body { 
+            background-color: var(--bg); 
+            padding: 16px; 
+            color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-nav-bar {
+            width: 100%;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .back-circle-btn {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: #fff;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .back-circle-btn svg { width: 14px; height: 14px; fill: #48484a; }
+
+        .brand-header {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
+            margin-top: 4px;
+        }
+        h1.brand-title { 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: #000000; 
+            letter-spacing: -0.3px;
+        }
+
+        .step-container { display: none; width: 100%; }
+        .step-container.active { display: block; animation: stepFade 0.23s ease-out; }
+        @keyframes stepFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-label { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: left; margin-bottom: 8px; padding-left: 2px; }
+        
+        .input-card {
+            width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+            position: relative; display: flex; align-items: center; margin-bottom: 20px; 
+        }
+        .input-card.is-valid { border-color: var(--success) !important; }
+        .input-card.is-invalid { border-color: var(--danger) !important; }
+
+        .field-input { width: 100%; padding: 14px 14px; border: none; outline: none; font-size: 14px; font-weight: 400; color: #000; background: transparent; }
+        .field-input::placeholder { color: #bcbcc1; }
+
+        .status-icon-wrap { display: flex; align-items: center; justify-content: center; padding-right: 14px; height: 100%; flex-shrink: 0; }
+        .status-icon-wrap svg { width: 18px; height: 18px; display: none; }
+        .input-card.is-valid .status-icon-wrap .tick-icon { display: block; fill: var(--success); }
+
+        .proceed-btn {
+            width: 100%; padding: 14px; background: #d1d1d6; color: #8e8e93; border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: not-allowed; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 6px;
+        }
+        .proceed-btn.active { background: var(--primary) !important; color: #fff !important; cursor: pointer !important; }
+        
+        .btn-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
+
+        /* SUMMARY CONTAINER CONFIGURATION */
+        .summary-card { 
+            background: var(--card); border-radius: 14px; overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 20px; padding: 0;
+            width: 100%;
+        }
+        
+        .summary-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 14px 16px; 
+            border-bottom: 1px solid #f2f2f7;
+            background: var(--card);
+        }
+        .summary-row:last-child { border-bottom: none; }
+        
+        .row-label-normal { 
+            width: 120px;
+            font-size: 14px; 
+            color: #2c2c2e; 
+            font-weight: 500; 
+            flex-shrink: 0;
+        }
+
+        .row-value { 
+            font-size: 13.5px; 
+            font-weight: 400; 
+            color: #1c1c1e; 
+            text-align: left;
+            flex-grow: 1;
+            word-break: break-all;
+            padding-left: 10px;
+        }
+
+        #successOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            z-index: 9999; justify-content: center; align-items: center;
+        }
+        .success-card {
+            background: #ffffff; border-radius: 20px; padding: 30px; width: 80%; max-width: 300px;
+            display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+        .success-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;}
+        .tick-svg { width: 32px; height: 32px; stroke: #fff; fill: none; stroke-width: 3.5; }
+        .success-heading { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .success-sub { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: center; line-height: 1.4; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="top-nav-bar">
+        <button id="backArrowBtn" class="back-circle-btn" onclick="handleBack()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+    </div>
+
+    <div class="brand-header" id="brandHeader">
+        <h1 class="brand-title">Telegram Account</h1>
+    </div>
+
+    <div id="stepPhone" class="step-container active">
+        <div class="section-label">Your Telegram Phone Number</div>
+        <div id="phoneCard" class="input-card">
+            <input type="tel" id="phoneInput" class="field-input" placeholder="Enter Phone (e.g. 01XXXXXXXXX)" oninput="checkPhoneLive()">
+            <div class="status-icon-wrap">
+                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+        </div>
+        <button id="phoneProceedBtn" class="proceed-btn" onclick="goToStep('Email')" disabled>
+            <div id="phoneSpinner" class="btn-spinner"></div>
+            <span id="phoneBtnText">Proceed</span>
+        </button>
+    </div>
+
+    <div id="stepEmail" class="step-container">
+        <div class="section-label">Your Email Address</div>
+        <div id="emailCard" class="input-card">
+            <input type="email" id="emailInput" class="field-input" placeholder="Enter Email Address" oninput="checkEmailLive()">
+            <div class="status-icon-wrap">
+                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </div>
+        </div>
+        <button id="emailProceedBtn" class="proceed-btn" onclick="goToStep('Summary')" disabled>
+            <div id="emailSpinner" class="btn-spinner"></div>
+            <span id="emailBtnText">Proceed</span>
+        </button>
+    </div>
+
+    <div id="stepSummary" class="step-container">
+        <div class="section-label">Account Confirmation Summary</div>
+        <div class="summary-card">
+            <div class="summary-row">
+                <span class="row-label-normal">Phone Number</span>
+                <span class="row-value" id="sumPhone">-</span>
+            </div>
+            
+            <div class="summary-row">
+                <span class="row-label-normal">Email Address</span>
+                <span class="row-value" id="sumEmail">-</span>
+            </div>
+        </div>
+
+        <button id="submitBtn" class="proceed-btn active" style="background:var(--primary) !important;" onclick="submitFinalData()">
+            <div id="submitSpinner" class="btn-spinner"></div>
+            <span id="submitBtnText">Submit Account</span>
+        </button>
+    </div>
+</div>
+
+<div id="successOverlay">
+    <div class="success-card">
+        <div class="success-circle">
+            <svg class="tick-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-heading">Synchronized!</div>
+        <div class="success-sub">Account data submitted successfully. This window will close shortly.</div>
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready(); tg.expand();
+
+    // 💡 আপনার BJS ব্যাকএন্ডের ডাবল সেফটির জন্য email এবং gmail দুটি কি-ই রাখা হয়েছে
+    let collectedFormData = { email: "", gmail: "", phone: "" };
+    let currentStepName = "Phone";
+
+    // 🇧🇩 বাংলাদেশি নম্বর চেকার লজিক (০১ দিয়ে শুরু এবং ১১ বা ১৪ ডিজিট)
+    function checkPhoneLive() {
+        const val = document.getElementById('phoneInput').value.trim();
+        const card = document.getElementById('phoneCard');
+        const btn = document.getElementById('phoneProceedBtn');
+        
+        // RegExp: 01 দিয়ে শুরু হওয়া ১১ ডিজিট অথবা +8801 দিয়ে শুরু হওয়া ১৪ ক্যারেক্টার চেক করবে
+        const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
+
+        if (bdPhoneRegex.test(val)) { 
+            card.className = "input-card is-valid"; 
+            btn.removeAttribute('disabled'); 
+            btn.classList.add('active'); 
+        }
+        else if (val.length === 0) { 
+            card.className = "input-card"; 
+            btn.setAttribute('disabled', 'true'); 
+            btn.classList.remove('active'); 
+        }
+        else { 
+            card.className = "input-card is-invalid"; 
+            btn.setAttribute('disabled', 'true'); 
+            btn.classList.remove('active'); 
+        }
+    }
+
+    // 📧 ইমেইল চেকার লাইভ লজিক
+    function checkEmailLive() {
+        const val = document.getElementById('emailInput').value.trim();
+        const card = document.getElementById('emailCard');
+        const btn = document.getElementById('emailProceedBtn');
+        
+        if (val.includes('@') && val.length >= 5 && val.lastIndexOf('.') > val.indexOf('@')) { 
+            card.className = "input-card is-valid"; 
+            btn.removeAttribute('disabled'); 
+            btn.classList.add('active'); 
+        }
+        else if (val.length === 0) { 
+            card.className = "input-card"; 
+            btn.setAttribute('disabled', 'true'); 
+            btn.classList.remove('active'); 
+        }
+        else { 
+            card.className = "input-card is-invalid"; 
+            btn.setAttribute('disabled', 'true'); 
+            btn.classList.remove('active'); 
+        }
+    }
+
+    // স্টেপ পরিবর্তন লজিক (প্রিমিয়াম লোডার এফেক্ট সহ)
+    function goToStep(nextStep) {
+        let currentLower = currentStepName.toLowerCase();
+        document.getElementById(currentLower + 'Spinner').style.display = 'block';
+        document.getElementById(currentLower + 'BtnText').style.display = 'none';
+        document.getElementById(currentLower + 'ProceedBtn').setAttribute('disabled', 'true');
+
+        setTimeout(() => {
+            if (currentStepName === "Phone") collectedFormData.phone = document.getElementById('phoneInput').value.trim();
+            if (currentStepName === "Email") {
+                const emailVal = document.getElementById('emailInput').value.trim();
+                collectedFormData.email = emailVal;
+                collectedFormData.gmail = emailVal; // ডাবল সেফটি প্রোটেকশন
+            }
+
+            document.getElementById('step' + currentStepName).style.display = 'none';
+            document.getElementById('step' + nextStep).style.display = 'block';
+            document.getElementById('backArrowBtn').style.display = 'flex';
+            
+            currentStepName = nextStep;
+
+            if (nextStep === "Summary") {
+                document.getElementById('brandHeader').style.display = 'none';
+                document.getElementById('sumPhone').innerText = collectedFormData.phone;
+                document.getElementById('sumEmail').innerText = collectedFormData.email;
+            }
+        }, 400);
+    }
+
+    // ব্যাক বাটন হ্যান্ডলার
+    function handleBack() {
+        document.getElementById('brandHeader').style.display = 'flex';
+        
+        if (currentStepName === "Summary") {
+            document.getElementById('stepSummary').style.display = 'none';
+            document.getElementById('stepEmail').style.display = 'block';
+            resetSpinner('email'); currentStepName = "Email";
+        } else if (currentStepName === "Email") {
+            document.getElementById('stepEmail').style.display = 'none';
+            document.getElementById('stepPhone').style.display = 'block';
+            document.getElementById('backArrowBtn').style.display = 'none';
+            resetSpinner('phone'); currentStepName = "Phone";
+        }
+    }
+
+    function resetSpinner(prefix) {
+        document.getElementById(prefix + 'Spinner').style.display = 'none';
+        document.getElementById(prefix + 'BtnText').style.display = 'block';
+        document.getElementById(prefix + 'ProceedBtn').removeAttribute('disabled');
+        document.getElementById(prefix + 'ProceedBtn').classList.add('active');
+    }
+
+    // ফাইনাল ডাটা বটের কাছে সাবমিট করার মেথড
+    function submitFinalData() {
+        document.getElementById('submitSpinner').style.display = 'block';
+        document.getElementById('submitBtnText').style.display = 'none';
+        document.getElementById('submitBtn').setAttribute('disabled', 'true');
+        document.getElementById('successOverlay').style.display = 'flex';
+
+        setTimeout(() => {
+            // বটের ব্যাকএন্ডে JSON ডাটা পাঠানো হচ্ছে
+            tg.sendData(JSON.stringify(collectedFormData));
+            setTimeout(() => {
+                tg.close();
+            }, 1000);
+        }, 1500);
+    }
+</script>
+</body>
+</html>
