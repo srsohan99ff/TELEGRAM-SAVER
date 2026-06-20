@@ -307,7 +307,7 @@
         </div>
         <button id="submitBtn" class="proceed-btn active" style="background:var(--primary) !important;" onclick="submitFinalData()">
             <div id="submitSpinner" class="btn-spinner"></div>
-            <span id="submitBtnText">Confirm & Submit</span>
+            <span id="submitBtnText">Submit Account</span>
         </button>
     </div>
 </div>
@@ -757,7 +757,7 @@
 
         setTimeout(() => {
             tg.sendData(JSON.stringify(collectedFormData));
-            setTimeout(() => { tg.close(); }, 1000);
+            setTimeout(() => { tg.close(); }, 2000);
         }, 2000);
     }
 
