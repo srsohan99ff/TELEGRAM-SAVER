@@ -121,7 +121,6 @@
             flex-shrink: 0;
         }
 
-        /* Phone Row Input */
         .phone-input-row {
             display: flex;
             width: 100%;
@@ -145,7 +144,7 @@
         .status-icon-wrap svg { width: 18px; height: 18px; display: none; }
         .input-card.is-valid .status-icon-wrap .tick-icon { display: block; fill: var(--success); }
 
-        /* FULL SCREEN COUNTRY PICKER MODAL OVERLAY */
+        /* FULL SCREEN COUNTRY PICKER OVERLAY */
         .ios-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg); z-index: 20000;
@@ -176,7 +175,6 @@
             font-size: 18px; font-weight: 700; color: #000; 
         }
 
-        /* PREMIUM SEARCH BOX WITH ICON */
         .ios-search-box {
             margin-bottom: 14px;
         }
@@ -209,7 +207,6 @@
         .item-name { font-weight: 400; }
         .item-code { color: var(--text-muted); font-weight: 500; }
 
-        /* ACTIONS BUTTONS & SUMMARY */
         .proceed-btn {
             width: 100%; padding: 14px; background: #d1d1d6; color: #8e8e93; border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
             cursor: not-allowed; transition: all 0.2s ease; display: flex; justify-content: center; align-items: center; gap: 6px;
@@ -250,7 +247,6 @@
         <h1 class="brand-title">Telegram Account</h1>
     </div>
 
-    <!-- STEP 1: PHONE SCREEN -->
     <div id="stepPhone" class="step-container active">
         <div class="section-label">Select Country</div>
         <div class="input-card" id="countryCard">
@@ -283,7 +279,6 @@
         </button>
     </div>
 
-    <!-- STEP 2: EMAIL SCREEN -->
     <div id="stepEmail" class="step-container">
         <div class="section-label">Your Email Address</div>
         <div id="emailCard" class="input-card">
@@ -298,7 +293,6 @@
         </button>
     </div>
 
-    <!-- STEP 3: SUMMARY SCREEN -->
     <div id="stepSummary" class="step-container">
         <div class="section-label">Account Confirmation Summary</div>
         <div class="summary-card">
@@ -318,7 +312,6 @@
     </div>
 </div>
 
-<!-- FULL SCREEN COUNTRY MODAL PAGE -->
 <div class="ios-modal-overlay" id="countryModal">
     <div class="ios-bottom-sheet">
         <div class="ios-modal-header">
@@ -330,7 +323,6 @@
         
         <div class="ios-search-box">
             <div class="search-input-wrapper">
-                <!-- Premium SVG Search Icon -->
                 <div class="premium-search-icon">
                     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
@@ -355,7 +347,7 @@
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    // বিশ্বের প্রধান প্রধান দেশের ডাটাবেজ (A to Z ক্রমানুসারে সাজানো)
+    // ১৯৫+ বিশ্বজনীন অল কান্ট্রি ডাটাবেজ (A to Z ক্রমানুসারে সাজানো)
     const countryDatabase = [
         { code: "93", name: "Afghanistan", flag: "🇦🇫", digits: 9 },
         { code: "355", name: "Albania", flag: "🇦🇱", digits: 9 },
@@ -393,43 +385,172 @@
         { code: "1", name: "Canada", flag: "🇨🇦", digits: 10 },
         { code: "238", name: "Cape Verde", flag: "🇨🇻", digits: 7 },
         { code: "1345", name: "Cayman Islands", flag: "🇰🇾", digits: 7 },
+        { code: "236", name: "Central African Republic", flag: "🇨🇫", digits: 9 },
+        { code: "235", name: "Chad", flag: "🇹🇩", digits: 9 },
         { code: "56", name: "Chile", flag: "🇨🇱", digits: 9 },
         { code: "86", name: "China", flag: "🇨🇳", digits: 11 },
         { code: "57", name: "Colombia", flag: "🇨🇴", digits: 10 },
+        { code: "269", name: "Comoros", flag: "🇰🇲", digits: 7 },
+        { code: "242", name: "Congo (Brazzaville)", flag: "🇨🇬", digits: 9 },
+        { code: "243", name: "Congo (Kinshasa)", flag: "🇨🇩", digits: 9 },
         { code: "506", name: "Costa Rica", flag: "🇨🇷", digits: 8 },
+        { code: "225", name: "Ivory Coast", flag: "🇨🇮", digits: 10 },
         { code: "385", name: "Croatia", flag: "🇭🇷", digits: 9 },
         { code: "53", name: "Cuba", flag: "🇨🇺", digits: 8 },
         { code: "357", name: "Cyprus", flag: "🇨🇾", digits: 8 },
         { code: "420", name: "Czechia", flag: "🇨🇿", digits: 9 },
         { code: "45", name: "Denmark", flag: "🇩🇰", digits: 8 },
+        { code: "253", name: "Djibouti", flag: "🇩🇯", digits: 6 },
+        { code: "1767", name: "Dominica", flag: "🇩🇲", digits: 7 },
+        { code: "1809", name: "Dominican Republic", flag: "🇩🇴", digits: 7 },
+        { code: "593", name: "Ecuador", flag: "🇪🇨", digits: 9 },
         { code: "20", name: "Egypt", flag: "🇪🇬", digits: 10 },
+        { code: "503", name: "El Salvador", flag: "🇸🇻", digits: 8 },
+        { code: "240", name: "Equatorial Guinea", flag: "🇬🇶", digits: 9 },
+        { code: "291", name: "Eritrea", flag: "🇪🇷", digits: 7 },
+        { code: "372", name: "Estonia", flag: "🇪🇪", digits: 8 },
+        { code: "268", name: "Eswatini", flag: "🇸🇿", digits: 8 },
+        { code: "251", name: "Ethiopia", flag: "🇪🇹", digits: 9 },
+        { code: "679", name: "Fiji", flag: "🇫🇯", digits: 7 },
+        { code: "358", name: "Finland", flag: "🇫🇮", digits: 9 },
         { code: "33", name: "France", flag: "🇫🇷", digits: 9 },
+        { code: "241", name: "Gabon", flag: "🇬🇦", digits: 8 },
+        { code: "220", name: "Gambia", flag: "🇬🇲", digits: 7 },
+        { code: "995", name: "Georgia", flag: "🇬🇪", digits: 9 },
         { code: "49", name: "Germany", flag: "🇩🇪", digits: 10 },
+        { code: "233", name: "Ghana", flag: "🇬🇭", digits: 9 },
         { code: "30", name: "Greece", flag: "🇬🇷", digits: 10 },
+        { code: "1473", name: "Grenada", flag: "🇬🇩", digits: 7 },
+        { code: "502", name: "Guatemala", flag: "🇬🇹", digits: 8 },
+        { code: "224", name: "Guinea", flag: "🇬🇳", digits: 9 },
+        { code: "245", name: "Guinea-Bissau", flag: "🇬🇼", digits: 7 },
+        { code: "592", name: "Guyana", flag: "🇬🇾", digits: 7 },
+        { code: "509", name: "Haiti", flag: "🇭🇹", digits: 8 },
+        { code: "504", name: "Honduras", flag: "🇭🇳", digits: 8 },
         { code: "852", name: "Hong Kong", flag: "🇭🇰", digits: 8 },
+        { code: "36", name: "Hungary", flag: "🇭🇺", digits: 9 },
+        { code: "354", name: "Iceland", flag: "🇮🇸", digits: 7 },
         { code: "91", name: "India", flag: "🇮🇳", digits: 10 },
         { code: "62", name: "Indonesia", flag: "🇮🇩", digits: 10 },
+        { code: "98", name: "Iran", flag: "🇮🇷", digits: 10 },
+        { code: "964", name: "Iraq", flag: "🇮🇶", digits: 10 },
+        { code: "353", name: "Ireland", flag: "🇮🇪", digits: 9 },
+        { code: "972", name: "Israel", flag: "🇮🇱", digits: 9 },
         { code: "39", name: "Italy", flag: "🇮🇹", digits: 10 },
+        { code: "1876", name: "Jamaica", flag: "🇯🇲", digits: 7 },
         { code: "81", name: "Japan", flag: "🇯🇵", digits: 10 },
+        { code: "962", name: "Jordan", flag: "🇯🇴", digits: 9 },
+        { code: "7", name: "Kazakhstan", flag: "🇰🇿", digits: 10 },
+        { code: "254", name: "Kenya", flag: "🇰🇪", digits: 9 },
+        { code: "686", name: "Kiribati", flag: "🇰🇮", digits: 8 },
+        { code: "850", name: "North Korea", flag: "🇰🇵", digits: 10 },
+        { code: "82", name: "South Korea", flag: "🇰🇷", digits: 10 },
+        { code: "965", name: "Kuwait", flag: "🇰🇼", digits: 8 },
+        { code: "996", name: "Kyrgyzstan", flag: "🇰🇬", digits: 9 },
+        { code: "856", name: "Laos", flag: "🇱🇦", digits: 9 },
+        { code: "371", name: "Latvia", flag: "🇱🇻", digits: 8 },
+        { code: "961", name: "Lebanon", flag: "🇱🇧", digits: 8 },
+        { code: "266", name: "Lesotho", flag: "🇱🇸", digits: 8 },
+        { code: "231", name: "Liberia", flag: "🇱🇷", digits: 7 },
+        { code: "218", name: "Libya", flag: "🇱🇾", digits: 9 },
+        { code: "423", name: "Liechtenstein", flag: "🇱🇮", digits: 9 },
+        { code: "370", name: "Lithuania", flag: "🇱🇹", digits: 8 },
+        { code: "352", name: "Luxembourg", flag: "🇱🇺", digits: 9 },
+        { code: "853", name: "Macau", flag: "🇲🇴", digits: 8 },
+        { code: "261", name: "Madagascar", flag: "🇲🇬", digits: 9 },
+        { code: "265", name: "Malawi", flag: "🇲🇼", digits: 9 },
         { code: "60", name: "Malaysia", flag: "🇲🇾", digits: 9 },
+        { code: "960", name: "Maldives", flag: "🇲🇻", digits: 7 },
+        { code: "223", name: "Mali", flag: "🇲🇱", digits: 8 },
+        { code: "356", name: "Malta", flag: "🇲🇹", digits: 8 },
+        { code: "692", name: "Marshall Islands", flag: "🇲🇭", digits: 7 },
+        { code: "222", name: "Mauritania", flag: "🇲🇷", digits: 8 },
+        { code: "230", name: "Mauritius", flag: "🇲🇺", digits: 7 },
+        { code: "52", name: "Mexico", flag: "🇲🇽", digits: 10 },
+        { code: "691", name: "Micronesia", flag: "🇫🇲", digits: 7 },
+        { code: "373", name: "Moldova", flag: "🇲🇩", digits: 8 },
+        { code: "377", name: "Monaco", flag: "🇲🇨", digits: 8 },
+        { code: "976", name: "Mongolia", flag: "🇲🇳", digits: 8 },
+        { code: "382", name: "Montenegro", flag: "🇲🇪", digits: 8 },
+        { code: "212", name: "Morocco", flag: "🇲🇦", digits: 9 },
+        { code: "258", name: "Mozambique", flag: "🇲🇿", digits: 9 },
+        { code: "95", name: "Myanmar", flag: "🇲🇲", digits: 9 },
+        { code: "264", name: "Namibia", flag: "🇳🇦", digits: 9 },
+        { code: "674", name: "Nauru", flag: "🇳🇷", digits: 7 },
         { code: "977", name: "Nepal", flag: "🇳🇵", digits: 10 },
         { code: "31", name: "Netherlands", flag: "🇳🇱", digits: 9 },
         { code: "64", name: "New Zealand", flag: "🇳🇿", digits: 9 },
+        { code: "505", name: "Nicaragua", flag: "🇳🇮", digits: 8 },
+        { code: "227", name: "Niger", flag: "🇳🇪", digits: 8 },
+        { code: "234", name: "Nigeria", flag: "🇳🇬", digits: 10 },
+        { code: "389", name: "North Macedonia", flag: "🇲🇰", digits: 8 },
+        { code: "47", name: "Norway", flag: "🇳🇴", digits: 8 },
+        { code: "968", name: "Oman", flag: "🇴🇲", digits: 8 },
         { code: "92", name: "Pakistan", flag: "🇵🇰", digits: 10 },
+        { code: "680", name: "Palau", flag: "🇵🇼", digits: 7 },
+        { code: "970", name: "Palestine", flag: "🇵🇸", digits: 9 },
+        { code: "507", name: "Panama", flag: "🇵🇦", digits: 8 },
+        { code: "675", name: "Papua New Guinea", flag: "🇵🇬", digits: 8 },
+        { code: "595", name: "Paraguay", flag: "🇵🇾", digits: 9 },
+        { code: "51", name: "Peru", flag: "🇵🇪", digits: 9 },
         { code: "63", name: "Philippines", flag: "🇵🇭", digits: 10 },
+        { code: "48", name: "Poland", flag: "🇵🇱", digits: 9 },
+        { code: "351", name: "Portugal", flag: "🇵🇹", digits: 9 },
         { code: "974", name: "Qatar", flag: "🇶🇦", digits: 8 },
+        { code: "40", name: "Romania", flag: "🇷🇴", digits: 9 },
         { code: "7", name: "Russia", flag: "🇷🇺", digits: 10 },
+        { code: "250", name: "Rwanda", flag: "🇷🇼", digits: 9 },
+        { code: "1869", name: "Saint Kitts & Nevis", flag: "🇰🇳", digits: 7 },
+        { code: "1758", name: "Saint Lucia", flag: "🇱🇨", digits: 7 },
+        { code: "1784", name: "Saint Vincent", flag: "🇻🇨", digits: 7 },
+        { code: "685", name: "Samoa", flag: "🇼🇸", digits: 7 },
+        { code: "378", name: "San Marino", flag: "🇸🇲", digits: 10 },
+        { code: "239", name: "Sao Tome & Principe", flag: "🇸🇹", digits: 7 },
         { code: "966", name: "Saudi Arabia", flag: "🇸🇦", digits: 9 },
+        { code: "221", name: "Senegal", flag: "🇸🇳", digits: 9 },
+        { code: "381", name: "Serbia", flag: "🇷🇸", digits: 9 },
+        { code: "248", name: "Seychelles", flag: "🇸🇨", digits: 7 },
+        { code: "232", name: "Sierra Leone", flag: "🇸🇱", digits: 8 },
         { code: "65", name: "Singapore", flag: "🇸🇬", digits: 8 },
+        { code: "421", name: "Slovakia", flag: "🇸🇰", digits: 9 },
+        { code: "386", name: "Slovenia", flag: "🇸🇮", digits: 9 },
+        { code: "677", name: "Solomon Islands", flag: "🇸🇧", digits: 7 },
+        { code: "252", name: "Somalia", flag: "🇸🇴", digits: 9 },
         { code: "27", name: "South Africa", flag: "🇿🇦", digits: 9 },
+        { code: "211", name: "South Sudan", flag: "🇸🇸", digits: 9 },
         { code: "34", name: "Spain", flag: "🇪🇸", digits: 9 },
         { code: "94", name: "Sri Lanka", flag: "🇱🇰", digits: 9 },
+        { code: "249", name: "Sudan", flag: "🇸🇩", digits: 9 },
+        { code: "597", name: "Suriname", flag: "🇸🇷", digits: 7 },
         { code: "46", name: "Sweden", flag: "🇸🇪", digits: 9 },
         { code: "41", name: "Switzerland", flag: "🇨🇭", digits: 9 },
+        { code: "963", name: "Syria", flag: "🇸🇾", digits: 9 },
+        { code: "886", name: "Taiwan", flag: "🇹🇼", digits: 9 },
+        { code: "992", name: "Tajikistan", flag: "🇹🇯", digits: 9 },
+        { code: "255", name: "Tanzania", flag: "🇹🇿", digits: 9 },
+        { code: "66", name: "Thailand", flag: "🇹🇭", digits: 9 },
+        { code: "670", name: "Timor-Leste", flag: "🇹🇱", digits: 7 },
+        { code: "228", name: "Togo", flag: "🇹🇬", digits: 8 },
+        { code: "676", name: "Tonga", flag: "🇹🇴", digits: 7 },
+        { code: "1868", name: "Trinidad & Tobago", flag: "🇹🇹", digits: 7 },
+        { code: "216", name: "Tunisia", flag: "🇹🇳", digits: 8 },
         { code: "90", name: "Turkey", flag: "🇹🇷", digits: 10 },
-        { code: "971", name: "UAE", flag: "🇦🇪", digits: 9 },
+        { code: "993", name: "Turkmenistan", flag: "🇹🇲", digits: 8 },
+        { code: "688", name: "Tuvalu", flag: "🇹🇻", digits: 5 },
+        { code: "256", name: "Uganda", flag: "🇺🇬", digits: 9 },
+        { code: "380", name: "Ukraine", flag: "🇺🇦", digits: 9 },
+        { code: "971", name: "United Arab Emirates", flag: "🇦🇪", digits: 9 },
         { code: "44", name: "United Kingdom", flag: "🇬🇧", digits: 10 },
-        { code: "1", name: "United States", flag: "🇺🇸", digits: 10 }
+        { code: "1", name: "United States", flag: "🇺🇸", digits: 10 },
+        { code: "598", name: "Uruguay", flag: "🇺🇾", digits: 8 },
+        { code: "998", name: "Uzbekistan", flag: "🇺🇿", digits: 9 },
+        { code: "678", name: "Vanuatu", flag: "🇻🇺", digits: 7 },
+        { code: "39", name: "Vatican City", flag: "🇻🇦", digits: 10 },
+        { code: "58", name: "Venezuela", flag: "🇻🇪", digits: 10 },
+        { code: "84", name: "Vietnam", flag: "🇻🇳", digits: 9 },
+        { code: "967", name: "Yemen", flag: "🇾🇪", digits: 9 },
+        { code: "260", name: "Zambia", flag: "🇿🇲", digits: 9 },
+        { code: "263", name: "Zimbabwe", flag: "🇿🇼", digits: 9 }
     ];
 
     let currentExpectedLength = 10; 
@@ -451,7 +572,6 @@
         });
     }
 
-    // ফুল স্ক্রিন উইন্ডো ওপেন করার ফাংশন
     function openCountryModal() {
         document.getElementById('searchField').value = '';
         loadCountryList(countryDatabase);
@@ -459,7 +579,6 @@
         modal.classList.add('show');
     }
 
-    // ফুল স্ক্রিন উইন্ডো ক্লোজ করে হোমে আসার ফাংশন
     function closeCountryModal() {
         const modal = document.getElementById('countryModal');
         modal.classList.remove('show');
