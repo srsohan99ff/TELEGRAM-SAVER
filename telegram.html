@@ -347,7 +347,7 @@
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    // ১৯৫+ বিশ্বজনীন অল কান্ট্রি ডাটাবেজ (A to Z ক্রমানুসারে সাজানো)
+    // ১৯৫+ বিশ্বজনীন অল কান্ট্রি ডাটাবেজ
     const countryDatabase = [
         { code: "93", name: "Afghanistan", flag: "🇦🇫", digits: 9 },
         { code: "355", name: "Albania", flag: "🇦🇱", digits: 9 },
@@ -597,13 +597,31 @@
         
         closeCountryModal();
         checkPhoneLive();
+
+        // দেশ সিলেক্ট করার সাথে সাথেই নাম্বারের বক্সে অটোমেটিক ফোকাস চলে যাবে
+        document.getElementById('phoneField').focus();
     }
 
+    // স্মার্ট সার্চ লজিক: নাম্বার হলে এক্সট্রাক্ট ম্যাচ (Exact Match), লেখা হলে নরমাল ম্যাচ
     function filterCountries() {
-        const query = document.getElementById('searchField').value.toLowerCase().trim();
-        const filtered = countryDatabase.filter(item => 
-            item.name.toLowerCase().includes(query) || item.code.includes(query)
-        );
+        const query = document.getElementById('searchField').value.trim();
+        const lowerQuery = query.toLowerCase();
+        
+        if (query === "") {
+            loadCountryList(countryDatabase);
+            return;
+        }
+
+        let filtered;
+        // যদি ইনপুটটি পুরোপুরি সংখ্যা বা নাম্বার হয়
+        if (/^\d+$/.test(query)) {
+            filtered = countryDatabase.filter(item => item.code === query);
+        } else {
+            // যদি ইনপুট টেক্সট বা অক্ষর হয় (যেমন: Ba, Bangladesh)
+            filtered = countryDatabase.filter(item => 
+                item.name.toLowerCase().includes(lowerQuery)
+            );
+        }
         loadCountryList(filtered);
     }
 
@@ -621,6 +639,9 @@
                 <span class="item-code" style="color: var(--text-muted); font-weight:500;">+${match.code}</span>
             `;
             currentExpectedLength = match.digits;
+            
+            // কান্ট্রি কোড সঠিক হওয়া মাত্রই অটোমেটিক নাম্বারের ঘরে ফোকাস চলে যাবে
+            document.getElementById('phoneField').focus();
         } else {
             trigger.classList.add('placeholder');
             document.getElementById('selectedCountryText').innerHTML = `
