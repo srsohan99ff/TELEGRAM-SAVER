@@ -104,12 +104,14 @@
         
         .btn-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.5s linear infinite; }
 
-        /* SUMMARY CONTAINER CONFIGURATION */
+        /* ========================================================
+           🍏 👑 SUMMARY CONTAINER CONFIGURATION (YOUR EXACT DESIGN)
+           ======================================================== */
         .summary-card { 
             background: var(--card); border-radius: 14px; overflow: hidden;
             border: 1px solid var(--border);
             margin-bottom: 20px; padding: 0;
-            width: 100%;
+            width: 100%; /* ফুল স্ক্রিনের মতো চওড়া */
         }
         
         .summary-row {
@@ -122,22 +124,24 @@
         }
         .summary-row:last-child { border-bottom: none; }
         
+        /* বামে থাকা লেবেল বোল্ড এবং ফিক্সড উইডথ */
         .row-label-normal { 
-            width: 120px;
+            width: 115px;
             font-size: 14px; 
-            color: #2c2c2e; 
-            font-weight: 500; 
+            color: #1c1c1e; 
+            font-weight: 700; /* বোল্ড সিস্টেম */
             flex-shrink: 0;
         }
-
+        
+        /* ডানের ভ্যালু - ছোট সাইজ এবং মিউটেটেড গ্রে কালার */
         .row-value { 
-            font-size: 13.5px; 
+            font-size: 13px; /* ছোট লেখা যাতে এক লাইনে এটে যায় */
             font-weight: 400; 
-            color: #1c1c1e; 
+            color: #8e8e93; /* মিউটেটেড স্টাইল */
             text-align: left;
             flex-grow: 1;
             word-break: break-all;
-            padding-left: 10px;
+            padding-left: 10px; /* একটা দুইটা স্পেস পরিমাণ গ্যাপ */
         }
 
         #successOverlay {
@@ -233,17 +237,14 @@
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    // 💡 আপনার BJS ব্যাকএন্ডের ডাবল সেফটির জন্য email এবং gmail দুটি কি-ই রাখা হয়েছে
     let collectedFormData = { email: "", gmail: "", phone: "" };
     let currentStepName = "Phone";
 
-    // 🇧🇩 বাংলাদেশি নম্বর চেকার লজিক (০১ দিয়ে শুরু এবং ১১ বা ১৪ ডিজিট)
+    // 🇧🇩 বাংলাদেশি নম্বর চেকার লজিক
     function checkPhoneLive() {
         const val = document.getElementById('phoneInput').value.trim();
         const card = document.getElementById('phoneCard');
         const btn = document.getElementById('phoneProceedBtn');
-        
-        // RegExp: 01 দিয়ে শুরু হওয়া ১১ ডিজিট অথবা +8801 দিয়ে শুরু হওয়া ১৪ ক্যারেক্টার চেক করবে
         const bdPhoneRegex = /^(?:\+88)?01[3-9]\d{8}$/;
 
         if (bdPhoneRegex.test(val)) { 
@@ -286,7 +287,7 @@
         }
     }
 
-    // স্টেপ পরিবর্তন লজিক (প্রিমিয়াম লোডার এফেক্ট সহ)
+    // স্টেপ পরিবর্তন লজিক 
     function goToStep(nextStep) {
         let currentLower = currentStepName.toLowerCase();
         document.getElementById(currentLower + 'Spinner').style.display = 'block';
@@ -298,7 +299,7 @@
             if (currentStepName === "Email") {
                 const emailVal = document.getElementById('emailInput').value.trim();
                 collectedFormData.email = emailVal;
-                collectedFormData.gmail = emailVal; // ডাবল সেফটি প্রোটেকশন
+                collectedFormData.gmail = emailVal; 
             }
 
             document.getElementById('step' + currentStepName).style.display = 'none';
@@ -338,7 +339,7 @@
         document.getElementById(prefix + 'ProceedBtn').classList.add('active');
     }
 
-    // ফাইনাল ডাটা বটের কাছে সাবমিট করার মেথড
+    // ফাইনাল ডাটা সাবমিট
     function submitFinalData() {
         document.getElementById('submitSpinner').style.display = 'block';
         document.getElementById('submitBtnText').style.display = 'none';
@@ -346,7 +347,6 @@
         document.getElementById('successOverlay').style.display = 'flex';
 
         setTimeout(() => {
-            // বটের ব্যাকএন্ডে JSON ডাটা পাঠানো হচ্ছে
             tg.sendData(JSON.stringify(collectedFormData));
             setTimeout(() => {
                 tg.close();
