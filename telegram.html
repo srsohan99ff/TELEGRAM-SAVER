@@ -145,52 +145,66 @@
         .status-icon-wrap svg { width: 18px; height: 18px; display: none; }
         .input-card.is-valid .status-icon-wrap .tick-icon { display: block; fill: var(--success); }
 
-        /* iOS Modal UI Sheet */
+        /* FULL SCREEN COUNTRY PICKER MODAL OVERLAY */
         .ios-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: 20000;
-            display: none; opacity: 0; transition: opacity 0.3s ease;
+            background: var(--bg); z-index: 20000;
+            display: none;
         }
-        .ios-modal-overlay.show { display: block; opacity: 1; }
+        .ios-modal-overlay.show { display: block; }
         
         .ios-bottom-sheet {
-            position: fixed; bottom: -100%; left: 0; width: 100%; max-height: 85vh;
-            background: #ffffff; border-radius: 12px 12px 0 0;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.15); z-index: 20001;
+            width: 100%; height: 100%;
             display: flex; flex-direction: column;
-            transition: bottom 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 16px;
         }
-        .ios-modal-overlay.show .ios-bottom-sheet { bottom: 0; }
 
         .ios-modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            height: 40px; margin-bottom: 12px; position: relative;
         }
-        .ios-modal-title { font-size: 17px; font-weight: 600; color: #000; }
-        .ios-close-btn {
-            font-size: 15px; font-weight: 500; color: var(--primary);
-            background: none; border: none; cursor: pointer;
+        .modal-back-btn {
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 1px solid var(--border); background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .modal-back-btn svg { width: 14px; height: 14px; fill: #48484a; }
+        
+        .ios-modal-title { 
+            position: absolute; left: 50%; transform: translateX(-50%);
+            font-size: 18px; font-weight: 700; color: #000; 
         }
 
+        /* PREMIUM SEARCH BOX WITH ICON */
         .ios-search-box {
-            padding: 10px 16px; background: #f2f2f7; border-bottom: 1px solid var(--border);
+            margin-bottom: 14px;
         }
         .search-input-wrapper {
-            position: relative; width: 100%; background: #ffffff;
-            border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center;
+            width: 100%; background: #ffffff;
+            border-radius: 10px; border: 1px solid var(--border); 
+            display: flex; align-items: center; padding-left: 12px;
+        }
+        .premium-search-icon {
+            width: 16px; height: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        }
+        .premium-search-icon svg {
+            width: 100%; height: 100%; fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
         }
         .search-field {
-            width: 100%; padding: 8px 12px; border: none; outline: none; font-size: 14px; background: transparent;
+            width: 100%; padding: 12px 10px; border: none; outline: none; font-size: 14.5px; background: transparent; color: #000;
         }
+        .search-field::placeholder { color: #bcbcc1; }
 
         .ios-list-content {
-            overflow-y: auto; flex-grow: 1; max-height: 50vh; padding-bottom: 20px;
+            overflow-y: auto; flex-grow: 1; background: #ffffff; border-radius: 10px; border: 1px solid var(--border);
         }
         .ios-country-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 14px 16px; font-size: 15px; color: #000;
             border-bottom: 1px solid #f2f2f7; cursor: pointer; transition: background 0.1s;
         }
+        .ios-country-item:last-child { border-bottom: none; }
         .ios-country-item:active { background: #f2f2f7; }
         .item-name { font-weight: 400; }
         .item-code { color: var(--text-muted); font-weight: 500; }
@@ -304,18 +318,26 @@
     </div>
 </div>
 
-<!-- iOS COUNTRY MODAL SHEET -->
-<div class="ios-modal-overlay" id="countryModal" onclick="closeCountryModal(event)">
-    <div class="ios-bottom-sheet" onclick="event.stopPropagation()">
+<!-- FULL SCREEN COUNTRY MODAL PAGE -->
+<div class="ios-modal-overlay" id="countryModal">
+    <div class="ios-bottom-sheet">
         <div class="ios-modal-header">
+            <button class="modal-back-btn" onclick="closeCountryModal()">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
             <span class="ios-modal-title">Select Country</span>
-            <button class="ios-close-btn" onclick="closeCountryModal(null)">Close</button>
         </div>
+        
         <div class="ios-search-box">
             <div class="search-input-wrapper">
-                <input type="text" id="searchField" class="search-field" placeholder="Search country or code..." oninput="filterCountries()">
+                <!-- Premium SVG Search Icon -->
+                <div class="premium-search-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <input type="text" id="searchField" class="search-field" placeholder="Search country code or name..." oninput="filterCountries()">
             </div>
         </div>
+        
         <div class="ios-list-content" id="countryListContainer"></div>
     </div>
 </div>
@@ -333,7 +355,7 @@
     const tg = window.Telegram.WebApp;
     tg.ready(); tg.expand();
 
-    // বিশ্বের সব দেশের মোবাইল নাম্বারের জন্য ডিজিট সীমানা (International Length Database)
+    // বিশ্বের প্রধান প্রধান দেশের ডাটাবেজ (A to Z ক্রমানুসারে সাজানো)
     const countryDatabase = [
         { code: "93", name: "Afghanistan", flag: "🇦🇫", digits: 9 },
         { code: "355", name: "Albania", flag: "🇦🇱", digits: 9 },
@@ -350,7 +372,7 @@
         { code: "994", name: "Azerbaijan", flag: "🇦🇿", digits: 9 },
         { code: "1242", name: "Bahamas", flag: "🇧🇸", digits: 7 },
         { code: "973", name: "Bahrain", flag: "🇧🇭", digits: 8 },
-        { code: "880", name: "Bangladesh", flag: "🇧🇩", digits: 10 }, // BD = 10 digits (without leading zero)
+        { code: "880", name: "Bangladesh", flag: "🇧🇩", digits: 10 },
         { code: "1246", name: "Barbados", flag: "🇧🇧", digits: 7 },
         { code: "375", name: "Belarus", flag: "🇧🇾", digits: 9 },
         { code: "32", name: "Belgium", flag: "🇧🇪", digits: 9 },
@@ -410,8 +432,8 @@
         { code: "1", name: "United States", flag: "🇺🇸", digits: 10 }
     ];
 
-    let currentExpectedLength = 10; // ডিফল্ট সীমানা ১০ ডিজিট
-    let collectedFormData = { phone: "", email: "" }; // কান্ট্রি রিমুভ করা হয়েছে
+    let currentExpectedLength = 10; 
+    let collectedFormData = { phone: "", email: "" }; 
     let currentStepName = "Phone";
 
     function loadCountryList(data) {
@@ -429,19 +451,18 @@
         });
     }
 
+    // ফুল স্ক্রিন উইন্ডো ওপেন করার ফাংশন
     function openCountryModal() {
         document.getElementById('searchField').value = '';
         loadCountryList(countryDatabase);
         const modal = document.getElementById('countryModal');
-        modal.style.display = 'block';
-        setTimeout(() => modal.classList.add('show'), 10);
+        modal.classList.add('show');
     }
 
-    function closeCountryModal(e) {
-        if(e && e.target !== document.getElementById('countryModal')) return;
+    // ফুল স্ক্রিন উইন্ডো ক্লোজ করে হোমে আসার ফাংশন
+    function closeCountryModal() {
         const modal = document.getElementById('countryModal');
         modal.classList.remove('show');
-        setTimeout(() => modal.style.display = 'none', 300);
     }
 
     function selectCountryItem(item) {
@@ -453,9 +474,9 @@
             <span class="item-code" style="color: var(--text-muted); font-weight:500;">+${item.code}</span>
         `;
         document.getElementById('codeField').value = item.code;
-        currentExpectedLength = item.digits; // দেশের নির্দিষ্ট সীমানা সেট
+        currentExpectedLength = item.digits; 
         
-        closeCountryModal(null);
+        closeCountryModal();
         checkPhoneLive();
     }
 
@@ -487,18 +508,16 @@
                 <span class="item-name">Select Country</span>
                 <span class="item-code"></span>
             `;
-            currentExpectedLength = 10; // রিলিজ না মিললে স্ট্যান্ডার্ড ১০
+            currentExpectedLength = 10; 
         }
         checkPhoneLive();
     }
 
-    // আপডেটেড নিখুঁত নাম্বার লেন্থ চেকার রুলস
     function checkPhoneLive() {
         const code = document.getElementById('codeField').value.trim();
         let phone = document.getElementById('phoneField').value.trim().replace(/[^0-9]/g, '');
         document.getElementById('phoneField').value = phone;
 
-        // যদি শুরুতে কোনোভাবে ০ দিয়ে দেয়, ট্রিম বা স্কিপ করার লজিক (যেমন ০ বাদ দিয়ে ১০ টি নাম্বার)
         if (phone.startsWith('0')) {
             phone = phone.substring(1);
         }
@@ -506,7 +525,6 @@
         const card = document.getElementById('phoneCard');
         const btn = document.getElementById('phoneProceedBtn');
 
-        // দেশের নির্দিষ্ট সীমানা (Length) অনুযায়ী একদম সঠিক হতে হবে
         if (code.length > 0 && phone.length === currentExpectedLength) { 
             card.className = "input-card is-valid"; 
             btn.removeAttribute('disabled'); 
@@ -552,7 +570,6 @@
             if (currentStepName === "Phone") {
                 let p = document.getElementById('phoneField').value.trim();
                 if(p.startsWith('0')) p = p.substring(1);
-                // কান্ট্রি কোড সহ ফুল নাম্বার জেনারেট
                 collectedFormData.phone = "+" + document.getElementById('codeField').value.trim() + p;
             }
             if (currentStepName === "Email") {
@@ -599,7 +616,6 @@
         document.getElementById('successOverlay').style.display = 'flex';
 
         setTimeout(() => {
-            // শুধুমাত্র নাম্বার এবং ইমেইল টেলিগ্রামে পাঠানো হচ্ছে
             tg.sendData(JSON.stringify(collectedFormData));
             setTimeout(() => { tg.close(); }, 1000);
         }, 2000);
