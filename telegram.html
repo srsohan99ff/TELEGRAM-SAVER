@@ -510,7 +510,7 @@
         { code: "221", name: "Senegal", flag: "🇸🇳", digits: 9 },
         { code: "381", name: "Serbia", flag: "🇷🇸", digits: 9 },
         { code: "248", name: "Seychelles", flag: "🇸🇨", digits: 7 },
-        { code: "232", name: "Sierra Leone", flag: "🇸🇱", digits: 8 },
+        { code: "232", name: "Sierra Leone", fill: "🇸🇱", digits: 8 },
         { code: "65", name: "Singapore", flag: "🇸🇬", digits: 8 },
         { code: "421", name: "Slovakia", flag: "🇸🇰", digits: 9 },
         { code: "386", name: "Slovenia", flag: "🇸🇮", digits: 9 },
@@ -598,11 +598,9 @@
         closeCountryModal();
         checkPhoneLive();
 
-        // দেশ সিলেক্ট করার সাথে সাথেই নাম্বারের বক্সে অটোমেটিক ফোকাস চলে যাবে
         document.getElementById('phoneField').focus();
     }
 
-    // স্মার্ট সার্চ লজিক: নাম্বার হলে এক্সট্রাক্ট ম্যাচ (Exact Match), লেখা হলে নরমাল ম্যাচ
     function filterCountries() {
         const query = document.getElementById('searchField').value.trim();
         const lowerQuery = query.toLowerCase();
@@ -613,11 +611,9 @@
         }
 
         let filtered;
-        // যদি ইনপুটটি পুরোপুরি সংখ্যা বা নাম্বার হয়
         if (/^\d+$/.test(query)) {
             filtered = countryDatabase.filter(item => item.code === query);
         } else {
-            // যদি ইনপুট টেক্সট বা অক্ষর হয় (যেমন: Ba, Bangladesh)
             filtered = countryDatabase.filter(item => 
                 item.name.toLowerCase().includes(lowerQuery)
             );
@@ -626,29 +622,58 @@
     }
 
     function onCodeFieldChange() {
-        let codeVal = document.getElementById('codeField').value.trim().replace(/[^0-9]/g, '');
-        document.getElementById('codeField').value = codeVal;
-
-        const match = countryDatabase.find(item => item.code === codeVal);
-        const trigger = document.getElementById('selectTrigger');
+        let rawVal = document.getElementById('codeField').value.trim().replace(/[^0-9]/g, '');
         
-        if (match) {
+        // কান্ট্রি কোড ডাটাবেজটিকে দৈর্ঘ্যের ভিত্তিতে বড় থেকে ছোট সাজিয়ে নিলাম (যেমন: ১ এর আগে ১২৬৪ চেক হবে)
+        let sortedDatabase = [...countryDatabase].sort((a, b) => b.code.length - a.code.length);
+        
+        let foundMatch = null;
+        let parsedPhone = "";
+
+        // চেক করা হচ্ছে ইনপুট করা টেক্সটটি কোনো নির্দিষ্ট কান্ট্রি কোড দিয়ে শুরু হচ্ছে কি না
+        for (let item of sortedDatabase) {
+            if (rawVal.startsWith(item.code) && rawVal.length > item.code.length) {
+                foundMatch = item;
+                parsedPhone = rawVal.substring(item.code.length);
+                break;
+            }
+        }
+
+        const trigger = document.getElementById('selectTrigger');
+
+        if (foundMatch) {
+            // যদি পুরো নাম্বার পেস্ট করা হয়ে থাকে এবং কান্ট্রি কোড ম্যাচ করে
+            document.getElementById('codeField').value = foundMatch.code;
+            document.getElementById('phoneField').value = parsedPhone;
+            
             trigger.classList.remove('placeholder');
             document.getElementById('selectedCountryText').innerHTML = `
-                <span class="item-name">${match.flag} ${match.name}</span>
-                <span class="item-code" style="color: var(--text-muted); font-weight:500;">+${match.code}</span>
+                <span class="item-name">${foundMatch.flag} ${foundMatch.name}</span>
+                <span class="item-code" style="color: var(--text-muted); font-weight:500;">+${foundMatch.code}</span>
             `;
-            currentExpectedLength = match.digits;
-            
-            // কান্ট্রি কোড সঠিক হওয়া মাত্রই অটোমেটিক নাম্বারের ঘরে ফোকাস চলে যাবে
+            currentExpectedLength = foundMatch.digits;
             document.getElementById('phoneField').focus();
         } else {
-            trigger.classList.add('placeholder');
-            document.getElementById('selectedCountryText').innerHTML = `
-                <span class="item-name">Select Country</span>
-                <span class="item-code"></span>
-            `;
-            currentExpectedLength = 10; 
+            // সাধারণ টাইপিং বা সিঙ্গেল কান্ট্রি কোড ইনপুটের ক্ষেত্রে আগের স্বাভাবিক লজিক
+            document.getElementById('codeField').value = rawVal;
+            const match = countryDatabase.find(item => item.code === rawVal);
+            
+            if (match) {
+                trigger.classList.remove('placeholder');
+                document.getElementById('selectedCountryText').innerHTML = `
+                    <span class="item-name">${match.flag} ${match.name}</span>
+                    <span class="item-code" style="color: var(--text-muted); font-weight:500;">+${match.code}</span>
+                `;
+                currentExpectedLength = match.digits;
+                document.getElementById('phoneField').focus();
+            } else {
+                trigger.classList.add('placeholder');
+                document.getElementById('selectedCountryText').innerHTML = `
+                    <span class="item-name">Select Country</span>
+                    <span class="item-code"></span>
+                `;
+                currentExpectedLength = 10; 
+            }
         }
         checkPhoneLive();
     }
